@@ -14,7 +14,7 @@ function Chat() {
 
 
   useEffect(() => {
-    const socket = io(`http://localhost:${process.env.REACT_APP_SERVER_PORT}`)
+    const socket = io(`${process.env.REACT_APP_SERVER_URL}`)
     socket.on('connect', () => {
       console.log(`socket connect ${socket.id}`)
       socket.emit('add-user', currentUser._id)
