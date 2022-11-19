@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { toastError } from '../utils/toastOptions'
 import { authAPI } from '../api/authApi'
+import BrandLogo from '../components/BrandLogo'
 
 function Login() {
   const navigate = useNavigate()
@@ -47,8 +48,8 @@ function Login() {
   
   return (
     <Container>
+      <BrandLogo />
       <form onSubmit={handleSubmit}>
-        <h1 className='brand-name'>Chat APP</h1>
         <input 
           type='text' 
           name='username' 
@@ -69,16 +70,6 @@ function Login() {
 }
 
 const Container = styled.div `
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background-color: #131324;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: white;
-
   form {
     display: flex;
     flex-direction: column;
@@ -91,13 +82,6 @@ const Container = styled.div `
     @media screen and (min-width: 720px){
       gap: 2rem;
       padding: 3rem 5rem;
-    }
-
-    .brand-name {
-      font-size: 1.5rem;
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
     }
 
     input {

@@ -42,7 +42,6 @@ function Chat() {
   }, [navigate])
 
   return (
-    <Container>
       <ChatWrapper>
         {
           currentUser && (
@@ -62,22 +61,8 @@ function Chat() {
           )
         }
       </ChatWrapper>
-    </Container>
   )
 }
-
-const Container = styled.div `
-  width: 100vw;
-  height: 100vh;
-  padding: 3rem 5rem;
-  overflow: hidden;
-  background-color: #131324;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: white;
-`
 
 const ChatWrapper = styled.div `
   background-color: #00000076;

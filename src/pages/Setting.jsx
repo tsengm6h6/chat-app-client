@@ -65,46 +65,32 @@ function ChatAvatarSetting() {
   }
 
   return (
-    <Container>
-      <AvatarContainer>
-        { isLoading
-          ? <ChatLoading />
-          : (
-            <>
-              <h1>Pick an avatar as your profile picture</h1>
-              <div className='avatars'>
-                { avatars.map((avatar, index) => (
-                  <div 
-                    className={`avatar ${selectedAvatarIndex === index ? 'selected' : null}`}
-                    key={index}
-                    onClick={() => setSelectedAvatarIndex(index)}>
-                    <img
-                      src={`data:image/svg+xml;base64,${avatar}`}
-                      alt="avatar"
-                    />
-                  </div>
-                ))}
-              </div>
-              <button onClick={handleSetProfile}>Set as profile picture</button>
-            </>
-          )
-        }
-      </AvatarContainer>
-    </Container>
-  )
+    <AvatarContainer>
+      { isLoading
+        ? <ChatLoading />
+        : (
+          <>
+            <h1>Pick an avatar as your profile picture</h1>
+            <div className='avatars'>
+              { avatars.map((avatar, index) => (
+                <div 
+                  className={`avatar ${selectedAvatarIndex === index ? 'selected' : null}`}
+                  key={index}
+                  onClick={() => setSelectedAvatarIndex(index)}>
+                  <img
+                    src={`data:image/svg+xml;base64,${avatar}`}
+                    alt="avatar"
+                  />
+                </div>
+              ))}
+            </div>
+            <button onClick={handleSetProfile}>Set as profile picture</button>
+          </>
+        )
+      }
+    </AvatarContainer>
+)
 }
-
-const Container = styled.div `
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  background-color: #131324;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: white;
-`
 
 const AvatarContainer = styled.div `
   max-width: 60%;

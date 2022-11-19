@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { userAPI } from '../api/userApi'
+import BrandLogo from './BrandLogo'
 
 function ChatContact({ currentUser, handleChatSelect, chatUser }) {
   const [contactUsers, setContactUsers] = useState([])
@@ -31,10 +32,7 @@ function ChatContact({ currentUser, handleChatSelect, chatUser }) {
           </div>
         ))}
       </div>
-      <div className="brand">
-        <img src='https://raw.githubusercontent.com/koolkishan/chat-app-react-nodejs/51e46d4ac8ecff43b9e4c7c581fe3a33711c5fd9/public/src/assets/logo.svg' alt='user-avatar'/>
-        <h2>CHAT APP</h2>
-      </div>
+      <BrandLogo />
     </ContactWrapper>
   )
 }
@@ -45,7 +43,7 @@ const ContactWrapper = styled.div `
  grid-template-rows: 12% 73% 15%;
  overflow: hidden;
  padding: 1rem;
- gap: 4px;
+ gap: 8px;
 
  .user, .contacts, .brand {
     img {
@@ -107,19 +105,6 @@ const ContactWrapper = styled.div `
       width: 4rem;
     }
  }
-
- .brand {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-transform: uppercase;
-
-    img {
-      height: 4rem;
-      width: 4rem;
-    }
- }
-
 `
 
 export default ChatContact
