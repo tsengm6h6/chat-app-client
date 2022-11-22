@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import UserCard from './UserCard'
+import ChatContactCard from './ChatContactCard'
 
 function ChatContacts() {
   return (
@@ -10,20 +10,20 @@ function ChatContacts() {
         <div className='chat-category'>
           <div className="type">Rooms</div>
           <div className="contacts">
-            <UserCard />
-            <UserCard />
+            <ChatContactCard />
+            <ChatContactCard />
           </div>
         </div>
         <div className="chat-category">
           <div className="type">Contacts</div>
           <div className="contacts">
-            <UserCard />
-            <UserCard />
-            <UserCard />
-            <UserCard />
-            <UserCard />
-            <UserCard />
-            <UserCard />
+            <ChatContactCard />
+            <ChatContactCard />
+            <ChatContactCard />
+            <ChatContactCard />
+            <ChatContactCard />
+            <ChatContactCard />
+            <ChatContactCard />
           </div>
         </div>
       </div>
@@ -44,7 +44,7 @@ const CardContainer = styled.div `
   }
 
   .chat-wrapper {
-    padding: 1rem 8px 1rem 4px;
+    padding: 1rem 8px 5.5rem 4px;
     height: calc(100vh - 80px);
     overflow-y: auto;
     border-radius: 8px;
@@ -59,10 +59,8 @@ const CardContainer = styled.div `
     }
 
     .chat-category {
-      margin-bottom: 2rem;
-      
-      &:last-child {
-        margin-bottom: 5rem;
+      &:not(:last-child) {
+        margin-bottom: 2rem;
       }
 
       .type {

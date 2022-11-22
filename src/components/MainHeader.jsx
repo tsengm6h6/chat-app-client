@@ -1,6 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { BiSearchAlt, BiGroup, BiCog } from "react-icons/bi"
+import { Link } from 'react-router-dom'
 
 function MainHeader() {
   return (
@@ -13,9 +14,9 @@ function MainHeader() {
         <button className="icon">
           <BiSearchAlt />
         </button>
-        <button className="icon">
+        <Link to="/room" className="icon">
           <BiGroup />
-        </button>
+        </Link>
         <button className="icon">
           <BiCog />
         </button>
@@ -51,8 +52,8 @@ const Header = styled.header `
     gap: 8px;
 
     .icon {
-      width: 1.5rem;
-      height: 1.5rem;
+      width: 2rem;
+      height: 2rem;
       border: none;
       border-radius: 50%;
       /* background-color: white; */

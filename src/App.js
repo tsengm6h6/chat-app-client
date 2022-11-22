@@ -7,6 +7,7 @@ import Setting from './pages/Setting'
 import { ToastContainer } from 'react-toastify';
 import Main from './pages/Main';
 import styled from 'styled-components';
+import Room from './pages/Room';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/register" element={<Register />}></Route>
           <Route path="/setting" element={<Setting />}></Route>
           <Route path="/main" element={<Main />}></Route>
+          <Route path="/room" element={<Room />}></Route>
         </Routes>
       </Router>
       <ToastContainer />

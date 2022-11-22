@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 
-function UserCard() {
+function ChatContactCard() {
   return (
     <Card>
       <img src='/talking.png' alt='user-avatar'/>
@@ -86,4 +86,4 @@ const Card = styled.div `
   }
 `
 
-export default UserCard
+export default ChatContactCard
