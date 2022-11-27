@@ -1,17 +1,19 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 
-function RoomContactCard() {
-  const [check, setCheck] = useState(true)
-
+function RoomContactCard({ contact, handleUserSelected }) {
   return (
     <Card>
-      <img src='/talking.png' alt='user-avatar'/>
+      <img src={`data:image/svg+xml;base64,${contact.avatarImage}`} alt='user-avatar'/>
       <div className='user-wrapper'>
-        <h2 className='user-name'>User name</h2>
+        <h2 className='user-name'>{contact.username}</h2>
       </div>
       <div className="radio-button">
-        <input type="checkbox" checked={check} onChange={() => setCheck(prev => !prev)} name="userName" />
+        <input 
+          type="checkbox" 
+          checked={contact.checked}  
+          onChange={() => handleUserSelected(contact._id)}
+          name="userName" />
       </div>
     </Card>
   )

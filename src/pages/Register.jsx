@@ -17,7 +17,7 @@ function Register() {
 
   useEffect(() => {
     if (localStorage.getItem(process.env.REACT_APP_LOCAL_KEY)) {
-      navigate('/')
+      navigate('/main')
     }
   }, [navigate])
 
@@ -29,7 +29,7 @@ function Register() {
       const { data } = await authAPI.register({ username, email, password })
       if (data.status) {
         localStorage.setItem(process.env.REACT_APP_LOCAL_KEY, JSON.stringify(data.user))
-        navigate('/')
+        navigate('/main')
       } else {
         toastError(data.msg);
       }

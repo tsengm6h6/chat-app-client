@@ -2,22 +2,23 @@ import React from 'react'
 import styled from 'styled-components'
 import RoomContactCard from './RoomContactCard'
 
-function RoomContacts() {
+function RoomContacts({ contacts, handleUserSelected, handleAddRoom }) {
   return (
     <CardContainer>
       <h2 className='chat'>Add Friends</h2>
       <div className='chat-wrapper'>
         <div className="contacts">
-          <RoomContactCard />
-          <RoomContactCard />
-          <RoomContactCard />
-          <RoomContactCard />
-          <RoomContactCard />
-          <RoomContactCard />
-          <RoomContactCard />
+        {
+          contacts.map((contact, index) => (
+            <RoomContactCard
+              key={`${index} - ${contact.username}`}
+              handleUserSelected={handleUserSelected}
+              contact={contact} />
+          ))
+        }
         </div>
       </div>
-      <button>Add Room</button>
+      <button onClick={handleAddRoom}>Add Room</button>
     </CardContainer>
   )
 }
@@ -39,7 +40,7 @@ const CardContainer = styled.div `
     padding-right: 8px;
     height: 60vh;
     overflow-y: auto;
-    border-radius: 20px;
+    border-radius: 8px;
 
     &::-webkit-scrollbar {
       background-color: #080420;

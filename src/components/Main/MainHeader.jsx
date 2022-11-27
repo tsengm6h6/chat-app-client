@@ -1,14 +1,22 @@
 import React from 'react'
 import styled from 'styled-components'
 import { BiSearchAlt, BiGroup, BiCog, BiLogOutCircle } from "react-icons/bi"
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
-function MainHeader() {
+function MainHeader({ currentUser }) {
+  const navigate = useNavigate()
+
+  const logout = () => {
+    // socket.current.emit('logout', currentUser._id)
+    localStorage.removeItem(process.env.REACT_APP_LOCAL_KEY)
+    navigate('/login')
+  }
+
   return (
     <Header>
       <div className="user-card">
-        <img src="/talking.png" alt="user-avatar" />
-        <h1>User name</h1>
+        <img src={`data:image/svg+xml;base64,${currentUser.avatarImage}`} alt="user-avatar" />
+        <h1>{currentUser.username}</h1>
       </div>
       <div className='icons'>
         <button className="icon">
@@ -21,7 +29,7 @@ function MainHeader() {
           <BiCog />
         </button>
         <button className="icon logout">
-          <BiLogOutCircle />
+          <BiLogOutCircle onClick={() => logout()}/>
       </button>
       </div>
     </Header>

@@ -1,29 +1,42 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import ChatContactCard from './ChatContactCard'
+import ChatContactCard from '../Chat/ChatContactCard'
+import { userAPI } from '../../api/userApi'
 
-function ChatContacts() {
+function MainContacts({ currentUser }) {
+  const [contactUsers, setContactUsers] = useState([])
+
+  useEffect(() => {
+    const fetchUsers = async() => {
+      const { data } = await userAPI.getUsers()
+      setContactUsers(data.data.filter(({ _id}) => _id !== currentUser._id))
+    }
+
+    fetchUsers()
+  }, [currentUser])
+
   return (
     <CardContainer>
       <h2 className='chat'>Chats</h2>
       <div className='chat-wrapper'>
-        <div className='chat-category'>
+        {/* <div className='chat-category'>
           <div className="type">Rooms</div>
           <div className="contacts">
             <ChatContactCard />
             <ChatContactCard />
           </div>
-        </div>
+        </div> */}
         <div className="chat-category">
           <div className="type">Contacts</div>
           <div className="contacts">
-            <ChatContactCard />
-            <ChatContactCard />
-            <ChatContactCard />
-            <ChatContactCard />
-            <ChatContactCard />
-            <ChatContactCard />
-            <ChatContactCard />
+          {
+            contactUsers.map((contact, index) => (
+                <ChatContactCard
+                  key={`${index} - ${contact.username}`}
+                  contact={contact}
+                />
+            ))
+          }
           </div>
         </div>
       </div>
@@ -75,4 +88,4 @@ const CardContainer = styled.div `
   }
 `
 
-export default ChatContacts
+export default MainContacts

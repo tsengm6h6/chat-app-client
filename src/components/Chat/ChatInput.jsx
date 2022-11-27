@@ -3,9 +3,7 @@ import styled from 'styled-components'
 import { BiSend, BiSmile } from "react-icons/bi";
 import EmojiPicker from 'emoji-picker-react';
 
-function ChatInput({
-  handleMessageSend
-}) {
+function ChatInput({ handleMessageSend }) {
   const [showEmoji, setShowEmoji] = useState(false)
   const [currentMessage, setCurrentMessage] = useState('')
 

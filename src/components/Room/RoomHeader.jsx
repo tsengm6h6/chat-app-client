@@ -1,24 +1,22 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { BiLeftArrowCircle } from "react-icons/bi"
 import { Link } from 'react-router-dom'
 
-function RoomHeader() {
-  const [roomName, setRoomName] = useState('')
-
+function RoomHeader({ roomAvatar, roomName, handleRoomNameChange }) {
   return (
     <Header>
       <Link to="/main" className="icon">
         <BiLeftArrowCircle/>
       </Link>
       <div className="room-info">
-        <img src="/talking.png" alt="room-avatar" />
+        <img src={`data:image/svg+xml;base64,${roomAvatar}`} alt="room-avatar" />
         <input 
           type="text" 
           placeholder='Input a room name...' 
           name='roomName' 
           value={roomName}
-          onChange={(evt) => setRoomName(evt.target.value)} />
+          onChange={(evt) => handleRoomNameChange(evt.target.value)} />
       </div>
     </Header>
   )

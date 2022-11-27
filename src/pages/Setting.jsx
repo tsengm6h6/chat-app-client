@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { Buffer } from 'buffer'
 import axios from "axios";
 import { toastError } from '../utils/toastOptions'
-import ChatLoading from '../components/ChatLoading'
+import Loading from '../components/Loading'
 import { userAPI } from '../api/userApi'
 
 function ChatAvatarSetting() {
@@ -20,7 +20,7 @@ function ChatAvatarSetting() {
       if (!user) {
         navigate('/login')
       } else if (user.avatarImage !== '') {
-        navigate('/')
+        navigate('/main')
       } else {
         setCurrentUser(user)
       }
@@ -60,14 +60,14 @@ function ChatAvatarSetting() {
         ...currentUser,
         avatarImage: data.image
       }))
-      navigate('/')
+      navigate('/main')
     }
   }
 
   return (
     <AvatarContainer>
       { isLoading
-        ? <ChatLoading />
+        ? <Loading />
         : (
           <>
             <h1>Pick an avatar as your profile picture</h1>

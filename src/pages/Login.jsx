@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { toastError } from '../utils/toastOptions'
@@ -15,7 +15,7 @@ function Login() {
 
   useEffect(() => {
     if (localStorage.getItem(process.env.REACT_APP_LOCAL_KEY)) {
-      navigate('/')
+      navigate('/main')
     }
   }, [navigate])
 
@@ -26,7 +26,7 @@ function Login() {
       const { data } = await authAPI.login({ username, password })
       if (data.status) {
         localStorage.setItem(process.env.REACT_APP_LOCAL_KEY, JSON.stringify(data.user))
-        navigate('/')
+        navigate('/main')
       } else {
         toastError(data.msg);
       }

@@ -1,21 +1,25 @@
 import React from 'react'
 import styled from 'styled-components'
 
-function ChatLoading() {
+function Loading() {
   return (
-    <Loading>
+    <LoadingWrapper>
       <img src="https://raw.githubusercontent.com/koolkishan/chat-app-react-nodejs/master/public/src/assets/loader.gif" alt='loading' />
-    </Loading>
+    </LoadingWrapper>
   )
 }
 
-const Loading = styled.div `
-  max-width: 60%;
+const LoadingWrapper = styled.div `
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100vh;
 
   img {
-    width: 100%;
+    max-width: 60%;
     object-fit: cover;
   }
 `
 
-export default ChatLoading
+export default Loading

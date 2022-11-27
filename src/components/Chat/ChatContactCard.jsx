@@ -1,12 +1,14 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useNavigate } from 'react-router-dom'
 
-function ChatContactCard() {
+function ChatContactCard({ contact }) {
+  const navigate = useNavigate()
   return (
-    <Card>
-      <img src='/talking.png' alt='user-avatar'/>
+    <Card onClick={() => navigate(`/chat/${contact._id}`)}>
+      <img src={`data:image/svg+xml;base64,${contact.avatarImage}`} alt='user-avatar'/>
       <div className='wrapper user-wrapper'>
-        <h2 className='user-name'>User name</h2>
+        <h2 className='user-name'>{contact.username}</h2>
         <p className='user-message truncate'>Lorem ipsum dolor sit amet?</p>
       </div>
       <div className="wrapper">

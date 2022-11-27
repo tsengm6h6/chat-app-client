@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { BiLeftArrowCircle } from "react-icons/bi"
 import { Link } from 'react-router-dom'
 
-function ChatHeader() {
+function ChatHeader({ chatUserId }) {
   return (
     <Header>
       <Link to="/main" className="icon">
@@ -12,6 +12,7 @@ function ChatHeader() {
       <div className="room-info">
         <img src="/talking.png" alt="user-avatar" />
         <h1>User Name</h1>
+        <span>{chatUserId}</span>
       </div>
     </Header>
   )
@@ -20,6 +21,7 @@ function ChatHeader() {
 const Header = styled.header `
   padding: 1.5rem 1rem;
   position: relative;
+  background-color: #131324;
 
   .icon {
     position: absolute;
