@@ -11,7 +11,7 @@ function Main() {
 
   useEffect(() => {
     if (!currentUser) {
-      const existedUser = localStorage.getItem(process.env.REACT_APP_LOCAL_KEY)
+      const existedUser = JSON.parse(localStorage.getItem(process.env.REACT_APP_LOCAL_KEY))
       if (existedUser) {
         setCurrentUser(existedUser)
       } else {

@@ -13,8 +13,8 @@ function ChatHeader() {
         <BiLeftArrowCircle/>
       </Link>
       <div className="room-info">
-        <img src={`data:image/svg+xml;base64,${chatTarget.avatarImage}`} alt="user-avatar" />
-        <h1>{chatTarget.username}</h1>
+        <img src={`data:image/svg+xml;base64,${chatTarget?.avatarImage}`} alt="user-avatar" />
+        <h1>{chatTarget?.username}</h1>
       </div>
     </Header>
   )

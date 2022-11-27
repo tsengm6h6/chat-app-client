@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import ChatHeader from '../components/Chat/ChatHeader'
 import ChatInput from '../components/Chat/ChatInput'
 import ChatMessages from '../components/Chat/ChatMessages'
-// import { io } from 'socket.io-client'
+import { io } from 'socket.io-client'
 import { messageAPI } from '../api/messageApi'
 import ChatContext from '../chatContext'
 
@@ -12,25 +12,34 @@ function Chat() {
   const navigate = useNavigate()
   const { currentUser, chatTarget, setCurrentUser } = useContext(ChatContext)
   const [messages, setMessages] = useState([])
-  // const ws = useRef(null)
+  const ws = useRef(null)
 
+  useEffect(() => {
+    const socket = io(`${process.env.REACT_APP_SERVER_URL}`)
+    socket.on('connect', () => {
+      console.log(`socket connect ${socket.id}`)
+      ws.current = socket
+      if (currentUser) {
+        socket.emit('add-user', currentUser._id)
+      }
+    })
 
-  // useEffect(() => {
-  //   if (currentUser) {
-  //     const socket = io(`${process.env.REACT_APP_SERVER_URL}`)
-  //     socket.on('connect', () => {
-  //       console.log(`socket connect ${socket.id}`)
-  //       socket.emit('add-user', currentUser._id)
-  //     })
-  //     ws.current = socket
+    const handler = ({ message, from }) => {
+      if (chatTarget?._id === from) { // 如果正在聊天的人和傳訊的人相同才加入顯示
+        setMessages(prevMessages  => [...prevMessages, {
+          message,
+          fromSelf: false,
+          time: new Date().toISOString()
+        }])
+      }
+    }
 
-  //     return () => {
-  //       if (socket.readyState === 1) { // <-- This is important
-  //         socket.close()
-  //       }
-  //     }
-  //   }
-  // }, [currentUser])
+    socket.on('client-receive-msg',handler)
+    return () => {
+      socket.off('client-receive-msg',handler)
+      socket.disconnect()
+    }
+  }, [ws, currentUser, chatTarget])
 
   useEffect(() => {
     if (!currentUser) {
@@ -71,12 +80,17 @@ function Chat() {
       from: currentUser._id,
       to: chatTarget._id
     })
+    // TODO: 用 socket 才能同時收到，而不是從 db 撈才有
+    ws.current.emit('input-message', {
+      message: newMessage,
+      from: currentUser._id,
+      to: chatTarget._id
+    })
     const formatMsg = data.messages.map(msg => ({
       message: msg.message,
       fromSelf: msg.sender === currentUser._id,
       time: msg.updatedAt
     }))
-    // TODO: 用 socket 才能同時收到，而不是從 db 撈才有
     // 即時的訊息要看怎麼帶入時間
     setMessages(formatMsg)
   }
