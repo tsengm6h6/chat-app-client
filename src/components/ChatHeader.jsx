@@ -1,68 +1,53 @@
 import React from 'react'
 import styled from 'styled-components'
-import { BiLogOutCircle } from "react-icons/bi";
+import { BiLeftArrowCircle } from "react-icons/bi"
+import { Link } from 'react-router-dom'
 
-function ChatHeader({ chatUser, handleLogout }) {
+function ChatHeader() {
   return (
-    <HeaderContainer>
-      <div className="user">
-        <img src={`data:image/svg+xml;base64,${chatUser.avatarImage}`} alt='user-avatar'/>
-        <h3>{chatUser.username}</h3>
+    <Header>
+      <Link to="/main" className="icon">
+        <BiLeftArrowCircle/>
+      </Link>
+      <div className="room-info">
+        <img src="/talking.png" alt="user-avatar" />
+        <h1>User Name</h1>
       </div>
-      <button className="logout" onClick={handleLogout}>
-        <BiLogOutCircle className='logout-icon'/>
-      </button>
-    </HeaderContainer>
+    </Header>
   )
 }
 
-const HeaderContainer = styled.div `
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
+const Header = styled.header `
+  padding: 1.5rem 1rem;
+  position: relative;
 
-    .user {
-      display: flex;
-      align-items: center;
+  .icon {
+    position: absolute;
+    font-size: 2rem;
+    color: #997af0;
+    top: 1.5rem;
+    left: 1rem;
+  }
 
-      h3 {
-        font-weight: 400;
-        text-transform: capitalize;
-      }
+  .room-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 
-      img {
-        height: 3rem;
-        width: 3rem;
-        border-radius: 50%;
-        margin-right: 0.5rem;
-        object-fit: cover;
-      }
+    img {
+      width: 4rem;
+      height: 4rem;
+      background-color: papayawhip;
+      border-radius: 50%;
     }
 
-    .logout {
-      width: 2rem;
-      height: 2rem;
+    h1 {
       font-size: 1rem;
-      transform: rotate(90deg);
-      background-color: #9a86f3;
-      color: white;
-      border-radius: 4px;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all .2s ease-in;
-
-      &:focus {
-        outline: none;
-      }
-
-      &:hover {
-        background-color: #b1a2f0;
-      }
+      max-width: 200px;
     }
+  }
 `
 
 export default ChatHeader

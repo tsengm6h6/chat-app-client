@@ -100,7 +100,7 @@ const ChatWrapper = styled.div `
   background-color: #080420;
   display: grid;
   grid-template-rows: 15% 75% 10%;
-  gap: 4px;
+  gap: 8px;
   overflow: hidden;
 
   .messages {
@@ -113,7 +113,7 @@ const ChatWrapper = styled.div `
 
     &::-webkit-scrollbar {
         background-color: #080420;
-        width: 6px;
+        width: 4px;
         &-thumb {
           background-color: #ffffff34;
           border-radius: 8px;

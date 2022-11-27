@@ -21,16 +21,16 @@ function ChatInput({
 
   return (
     <InputContainer>
-        <div className="button emoji-button">
-          <BiSmile onClick={() => setShowEmoji(!showEmoji)} />
-          { showEmoji && <EmojiPicker className="emoji-picker"  onEmojiClick={handleEmojiClick}/> }
-        </div>
         <form onSubmit={onFormSubmit}>
           <input 
             className='input-field' type="text"
             onChange={(evt) => setCurrentMessage(evt.target.value)}
             value={currentMessage}
           />
+          <div className="button emoji-button">
+            <BiSmile onClick={() => setShowEmoji(!showEmoji)} />
+            { showEmoji && <EmojiPicker className="emoji-picker"  onEmojiClick={handleEmojiClick}/> }
+          </div>
           <button 
             className='button submit-button'
             type='submit'
@@ -44,8 +44,6 @@ function ChatInput({
 
 const InputContainer = styled.div `
   padding: 1rem;
-  display: flex;
-  align-items: center;
 
     .button {
       font-size: 1.25rem;
@@ -64,7 +62,7 @@ const InputContainer = styled.div `
       background-color: transparent;
       color: white;
       font-size: 1.75rem;
-      margin-right: 1rem;
+      margin-right: 0.5rem;
       position: relative;
     }
 
@@ -72,7 +70,7 @@ const InputContainer = styled.div `
     .EmojiPickerReact.epr-main {
       position: absolute;
       bottom: 3.5rem;
-      left: 0;
+      right: -100px;
       background-color: #080420;
       box-shadow: 0 1px 10px #9a86f3;
       border-color: #9a86f3;
@@ -101,6 +99,7 @@ const InputContainer = styled.div `
           border-color: #9a86f3;
         }
       }
+
       .epr-body,
       .epr-emoji-category-label {
         background-color: #080420;
@@ -109,14 +108,15 @@ const InputContainer = styled.div `
     
 
     form {
-      flex: 1;
       background-color: #ffffff34;
       border-radius: 40px;
       display: flex;
+      justify-content: space-between;
 
       .input-field {
         flex: 1 1 auto;
-        padding: 1rem 1rem;
+        min-width: none;
+        padding: 0.75rem 1rem;
         font-size: 1.25rem;
         background-color: transparent;
         border: none;
@@ -125,11 +125,14 @@ const InputContainer = styled.div `
       }
 
       .submit-button {
-        padding: 4px 32px;
+        padding: 4px 12px;
         font-size: 1.25rem;
         background-color: #9a86f3;
         color: white;
-        border-radius: 40px;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 40px;
+        border-bottom-left-radius: 4px;
+        border-bottom-right-radius: 40px;
 
         &:hover {
           background-color: #b1a2f0;

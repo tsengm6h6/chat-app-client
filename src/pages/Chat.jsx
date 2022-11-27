@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import ChatContainer from '../components/ChatContainer'
-import ChatContact from '../components/ChatContact'
-import ChatWelcome from '../components/ChatWelcome'
+import ChatHeader from '../components/ChatHeader'
+import ChatInput from '../components/ChatInput'
+import ChatMessages from '../components/ChatMessages'
 import { io } from 'socket.io-client'
 
 function Chat() {
   const navigate = useNavigate()
   const [currentUser, setCurrentUser] = useState(null)
-  const [chatUser, setChatUser] = useState(null)
   const ws = useRef(null)
 
 
@@ -43,23 +42,9 @@ function Chat() {
 
   return (
       <ChatWrapper>
-        {
-          currentUser && (
-            <>
-              <ChatContact 
-                currentUser={currentUser} 
-                handleChatSelect={setChatUser}
-                chatUser={chatUser} />
-              { chatUser 
-                ? <ChatContainer 
-                    currentUser={currentUser} 
-                    chatUser={chatUser}
-                    socket={ws} />
-                : <ChatWelcome />
-              }
-            </>
-          )
-        }
+        <ChatHeader />
+        <ChatMessages />
+        <ChatInput />
       </ChatWrapper>
   )
 }
@@ -70,8 +55,9 @@ const ChatWrapper = styled.div `
   height: 100%;
   border-radius: 8px;
   overflow: hidden;
-  display: grid;
-  grid-template-columns: 30% 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 `
 
 export default Chat

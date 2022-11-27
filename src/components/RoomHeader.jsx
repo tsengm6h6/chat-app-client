@@ -25,9 +25,6 @@ function RoomHeader() {
 }
 
 const Header = styled.header `
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding: 1.5rem 1rem;
   position: relative;
 
@@ -64,7 +61,6 @@ const Header = styled.header `
       color: white;
     }
   }
-
 `
 
 export default RoomHeader

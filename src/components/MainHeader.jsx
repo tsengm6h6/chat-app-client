@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { BiSearchAlt, BiGroup, BiCog } from "react-icons/bi"
+import { BiSearchAlt, BiGroup, BiCog, BiLogOutCircle } from "react-icons/bi"
 import { Link } from 'react-router-dom'
 
 function MainHeader() {
@@ -20,6 +20,9 @@ function MainHeader() {
         <button className="icon">
           <BiCog />
         </button>
+        <button className="icon logout">
+          <BiLogOutCircle />
+      </button>
       </div>
     </Header>
   )
@@ -66,9 +69,12 @@ const Header = styled.header `
       
         &:hover, &:active {
           box-shadow: 1px 1px 2px #997af0;
-        }
-      
+        } 
     }
+  }
+
+  .logout {
+    transform: rotate(180deg);
   }
 `
 
