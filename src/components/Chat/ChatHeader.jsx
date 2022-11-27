@@ -1,18 +1,20 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 import { BiLeftArrowCircle } from "react-icons/bi"
 import { Link } from 'react-router-dom'
+import ChatContext from '../../chatContext'
 
-function ChatHeader({ chatUserId }) {
+function ChatHeader() {
+  const { chatTarget } = useContext(ChatContext)
+
   return (
     <Header>
       <Link to="/main" className="icon">
         <BiLeftArrowCircle/>
       </Link>
       <div className="room-info">
-        <img src="/talking.png" alt="user-avatar" />
-        <h1>User Name</h1>
-        <span>{chatUserId}</span>
+        <img src={`data:image/svg+xml;base64,${chatTarget.avatarImage}`} alt="user-avatar" />
+        <h1>{chatTarget.username}</h1>
       </div>
     </Header>
   )

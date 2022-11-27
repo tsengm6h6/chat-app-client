@@ -1,14 +1,17 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 import { BiSearchAlt, BiGroup, BiCog, BiLogOutCircle } from "react-icons/bi"
 import { Link, useNavigate } from 'react-router-dom'
+import ChatContext from '../../chatContext'
 
 function MainHeader({ currentUser }) {
   const navigate = useNavigate()
+  const { setCurrentUser } = useContext(ChatContext)
 
   const logout = () => {
     // socket.current.emit('logout', currentUser._id)
     localStorage.removeItem(process.env.REACT_APP_LOCAL_KEY)
+    setCurrentUser(null)
     navigate('/login')
   }
 

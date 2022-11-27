@@ -1,11 +1,19 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
+import ChatContext from '../../chatContext'
 
 function ChatContactCard({ contact }) {
   const navigate = useNavigate()
+  const { setChatTarget } = useContext(ChatContext)
+
+  const handleCardClick = (contactUser) => {
+    setChatTarget(contactUser)
+    navigate(`/chat/${contactUser._id}`)
+  }
+
   return (
-    <Card onClick={() => navigate(`/chat/${contact._id}`)}>
+    <Card onClick={() => handleCardClick(contact)}>
       <img src={`data:image/svg+xml;base64,${contact.avatarImage}`} alt='user-avatar'/>
       <div className='wrapper user-wrapper'>
         <h2 className='user-name'>{contact.username}</h2>

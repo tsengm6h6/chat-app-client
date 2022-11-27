@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { Buffer } from 'buffer'
@@ -6,27 +6,27 @@ import axios from "axios";
 import { toastError } from '../utils/toastOptions'
 import Loading from '../components/Loading'
 import { userAPI } from '../api/userApi'
+import ChatContext from '../chatContext';
 
 function ChatAvatarSetting() {
   const navigate = useNavigate()
   const [isLoading, setIsLoading] = useState(false)
   const [avatars, setAvatars] = useState([])
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState(null)
-  const [currentUser, setCurrentUser] = useState(null)
+  const { currentUser, setCurrentUser } = useContext(ChatContext)
 
   useEffect(() => {
-    const getLocalStorageUser = async () => {
-      const user = await JSON.parse(localStorage.getItem(process.env.REACT_APP_LOCAL_KEY))
-      if (!user) {
-        navigate('/login')
-      } else if (user.avatarImage !== '') {
-        navigate('/main')
+    if (!currentUser) {
+      const existedUser = localStorage.getItem(process.env.REACT_APP_LOCAL_KEY)
+      if (existedUser) {
+        setCurrentUser(existedUser)
       } else {
-        setCurrentUser(user)
+        navigate('/login')
       }
-    }
-    getLocalStorageUser()
-  }, [navigate])
+    } else if (currentUser.avatarImage !== '') {
+      navigate('/main')
+    } 
+  }, [navigate, currentUser, setCurrentUser])
 
   useEffect(() => {
     setIsLoading(true)
@@ -60,6 +60,10 @@ function ChatAvatarSetting() {
         ...currentUser,
         avatarImage: data.image
       }))
+      setCurrentUser({
+        ...currentUser,
+        avatarImage: data.image
+      })
       navigate('/main')
     }
   }

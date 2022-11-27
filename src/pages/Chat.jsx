@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import React, { useState, useEffect, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import ChatHeader from '../components/Chat/ChatHeader'
 import ChatInput from '../components/Chat/ChatInput'
 import ChatMessages from '../components/Chat/ChatMessages'
 // import { io } from 'socket.io-client'
 import { messageAPI } from '../api/messageApi'
+import ChatContext from '../chatContext'
 
 function Chat() {
   const navigate = useNavigate()
-  const { friendId: chatUserId } = useParams()
-  const [currentUser, setCurrentUser] = useState(null)
+  const { currentUser, chatTarget, setCurrentUser } = useContext(ChatContext)
   const [messages, setMessages] = useState([])
   // const ws = useRef(null)
 
@@ -33,18 +33,17 @@ function Chat() {
   // }, [currentUser])
 
   useEffect(() => {
-    const getLocalStorageUser = async () => {
-      const user = await JSON.parse(localStorage.getItem(process.env.REACT_APP_LOCAL_KEY))
-      if (!user) {
-        navigate('/login')
-      } else if (user.avatarImage === '') {
-        navigate('/setting')
+    if (!currentUser) {
+      const existedUser = localStorage.getItem(process.env.REACT_APP_LOCAL_KEY)
+      if (existedUser) {
+        setCurrentUser(existedUser)
       } else {
-        setCurrentUser(user)
+        navigate('/login')
       }
-    }
-    getLocalStorageUser()
-  }, [navigate])
+    } else if (currentUser.avatarImage === '') {
+      navigate('/setting')
+    } 
+  }, [navigate, currentUser, setCurrentUser])
 
 
   useEffect(() => {
@@ -52,7 +51,7 @@ function Chat() {
       const fetchMsg = async() => {
         const { data } = await messageAPI.getMessages({
           from: currentUser._id,
-          to: chatUserId
+          to: chatTarget._id
         })
         const formatMsg = data.messages.map(msg => ({
           message: msg.message,
@@ -63,14 +62,14 @@ function Chat() {
       }
       fetchMsg()
     }
-  }, [currentUser, chatUserId])
+  }, [currentUser, chatTarget])
 
   const onMessageSend = async (evt, newMessage) => {
     evt.preventDefault()
     const { data } = await messageAPI.postMessage({
       message: newMessage,
       from: currentUser._id,
-      to: chatUserId
+      to: chatTarget._id
     })
     const formatMsg = data.messages.map(msg => ({
       message: msg.message,
@@ -86,7 +85,7 @@ function Chat() {
       <ChatWrapper>
         { currentUser && (
           <>
-            <ChatHeader chatUserId={chatUserId} />
+            <ChatHeader />
             <ChatMessages messages={messages} />
             <ChatInput handleMessageSend={onMessageSend} />
           </>

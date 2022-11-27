@@ -8,20 +8,24 @@ import { ToastContainer } from 'react-toastify';
 import Main from './pages/Main';
 import styled from 'styled-components';
 import Room from './pages/Room';
+import { ChatProvider } from './chatContext'
 
 function App() {
   return (
     <Conatiner>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Chat />}></Route>
-          <Route path="/login" element={<Login />}></Route>
-          <Route path="/register" element={<Register />}></Route>
-          <Route path="/setting" element={<Setting />}></Route>
-          <Route path="/main" element={<Main />}></Route>
-          <Route path="/room" element={<Room />}></Route>
-        </Routes>
-      </Router>
+      <ChatProvider>
+        <Router>
+          <Routes>
+            <Route path="/chat/:friendId" element={<Chat />}></Route>
+            <Route path="/" element={<Chat />}></Route>
+            <Route path="/login" element={<Login />}></Route>
+            <Route path="/register" element={<Register />}></Route>
+            <Route path="/setting" element={<Setting />}></Route>
+            <Route path="/main" element={<Main />}></Route>
+            <Route path="/room" element={<Room />}></Route>
+          </Routes>
+        </Router>
+        </ChatProvider>
       <ToastContainer />
     </Conatiner>
   );

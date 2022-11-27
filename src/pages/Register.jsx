@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
 import { toastError } from '../utils/toastOptions'
 import { authAPI } from '../api/authApi'
 import BrandLogo from '../components/BrandLogo'
+import ChatContext from '../chatContext'
 
 function Register() {
   const navigate = useNavigate()
+  const { setCurrentUser } = useContext(ChatContext)
 
   const [formData, setFormData] = useState({
     username: '',
@@ -16,19 +18,21 @@ function Register() {
   })
 
   useEffect(() => {
-    if (localStorage.getItem(process.env.REACT_APP_LOCAL_KEY)) {
+    const existedUser = localStorage.getItem(process.env.REACT_APP_LOCAL_KEY)
+    if (existedUser) {
+      setCurrentUser(existedUser)
       navigate('/main')
     }
-  }, [navigate])
+  }, [navigate, setCurrentUser])
 
   const handleSubmit = async (evt) => {
     evt.preventDefault()
     if (validation()) {
       const { username, email, password } = formData
-      console.log('submit')
       const { data } = await authAPI.register({ username, email, password })
       if (data.status) {
         localStorage.setItem(process.env.REACT_APP_LOCAL_KEY, JSON.stringify(data.user))
+        setCurrentUser(data.user)
         navigate('/main')
       } else {
         toastError(data.msg);

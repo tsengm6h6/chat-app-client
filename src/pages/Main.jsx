@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useContext } from 'react'
 import styled from 'styled-components'
 import MainHeader from '../components/Main/MainHeader'
 import MainContacts from '../components/Main/MainContacts'
 import { useNavigate } from 'react-router-dom'
+import ChatContext from '../chatContext'
 
 function Main() {
   const navigate = useNavigate()
-  const [currentUser, setCurrentUser] = useState(null)
+  const { currentUser, setCurrentUser } = useContext(ChatContext)
 
   useEffect(() => {
-    const getLocalStorageUser = async () => {
-      const user = await JSON.parse(localStorage.getItem(process.env.REACT_APP_LOCAL_KEY))
-      if (!user) {
-        navigate('/login')
-      } else if (user.avatarImage === '') {
-        navigate('/setting')
+    if (!currentUser) {
+      const existedUser = localStorage.getItem(process.env.REACT_APP_LOCAL_KEY)
+      if (existedUser) {
+        setCurrentUser(existedUser)
       } else {
-        setCurrentUser(user)
+        navigate('/login')
       }
-    }
-    getLocalStorageUser()
-  }, [navigate])
+    } else if (currentUser.avatarImage === '') {
+      navigate('/setting')
+    } 
+  }, [navigate, currentUser, setCurrentUser])
 
   return (
     <MainContainer>

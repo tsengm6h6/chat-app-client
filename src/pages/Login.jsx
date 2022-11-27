@@ -4,9 +4,11 @@ import styled from 'styled-components'
 import { toastError } from '../utils/toastOptions'
 import { authAPI } from '../api/authApi'
 import BrandLogo from '../components/BrandLogo'
+import ChatContext from '../chatContext'
 
 function Login() {
   const navigate = useNavigate()
+  const { setCurrentUser } = useContext(ChatContext) 
 
   const [formData, setFormData] = useState({
     username: '',
@@ -14,10 +16,12 @@ function Login() {
   })
 
   useEffect(() => {
-    if (localStorage.getItem(process.env.REACT_APP_LOCAL_KEY)) {
+    const existedUser = localStorage.getItem(process.env.REACT_APP_LOCAL_KEY)
+    if (existedUser) {
+      setCurrentUser(existedUser)
       navigate('/main')
     }
-  }, [navigate])
+  }, [navigate, setCurrentUser])
 
   const handleSubmit = async(evt) => {
     evt.preventDefault()
@@ -26,6 +30,7 @@ function Login() {
       const { data } = await authAPI.login({ username, password })
       if (data.status) {
         localStorage.setItem(process.env.REACT_APP_LOCAL_KEY, JSON.stringify(data.user))
+        setCurrentUser(data.user)
         navigate('/main')
       } else {
         toastError(data.msg);
