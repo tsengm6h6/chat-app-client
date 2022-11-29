@@ -4,6 +4,7 @@ import RoomContacts from '../components/Room/RoomContacts'
 import RoomHeader from '../components/Room/RoomHeader'
 import { useNavigate } from 'react-router-dom'
 import { userAPI } from '../api/userApi'
+import { roomAPI } from '../api/roomApi'
 import { Buffer } from 'buffer'
 import axios from "axios";
 import Loading from '../components/Loading'
@@ -28,7 +29,6 @@ function Room() {
     }
   }, [currentUser])
 
-  // TODO: add loading
   useEffect(() => {
     setLoading(true)
     const getLocalStorageUser = async () => {
@@ -63,11 +63,17 @@ function Room() {
     })
   }
 
-  const onAddRoom = () => {
+  const onAddRoom = async() => {
     // TODO: fetch API
     const invitedUsers = [currentUser].concat(contactUsers.filter(user => user.checked))
     console.log('room name', roomName)
     console.log('room users', invitedUsers)
+    const response = await roomAPI.postRoom({ 
+      roomname: roomName,
+      users: invitedUsers.map(user => user._id),
+      avatarImage: roomAvatar
+    })
+    console.log(response)
   }
 
   return (

@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import ChatContactCard from '../Chat/ChatContactCard'
 import { userAPI } from '../../api/userApi'
+import { roomAPI } from '../../api/roomApi'
 
 function MainContacts({ currentUser }) {
   const [contactUsers, setContactUsers] = useState([])
+  const [rooms, setRooms] = useState([])
 
   useEffect(() => {
     const fetchUsers = async() => {
@@ -12,20 +14,33 @@ function MainContacts({ currentUser }) {
       setContactUsers(data.data.filter(({ _id}) => _id !== currentUser._id))
     }
 
+    const fetchUserRooms = async() => {
+      const { data } = await roomAPI.getUserRooms({ userId: currentUser._id })
+      console.log('fetch room', data, currentUser._id)
+      setRooms(data.data)
+    }
+
     fetchUsers()
+    fetchUserRooms()
   }, [currentUser])
 
   return (
     <CardContainer>
       <h2 className='chat'>Chats</h2>
       <div className='chat-wrapper'>
-        {/* <div className='chat-category'>
+        <div className='chat-category'>
           <div className="type">Rooms</div>
           <div className="contacts">
-            <ChatContactCard />
-            <ChatContactCard />
+            {
+              rooms.map((room, index) => (
+                  <ChatContactCard
+                    key={`${index} - ${room.roomname}`}
+                    contact={room}
+                  />
+              ))
+            }
           </div>
-        </div> */}
+        </div>
         <div className="chat-category">
           <div className="type">Contacts</div>
           <div className="contacts">

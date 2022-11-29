@@ -16,7 +16,7 @@ function App() {
       <ChatProvider>
         <Router>
           <Routes>
-            <Route path="/chat/:friendId" element={<Chat />}></Route>
+            <Route path="/chat" element={<Chat />}></Route>
             <Route path="/" element={<Chat />}></Route>
             <Route path="/login" element={<Login />}></Route>
             <Route path="/register" element={<Register />}></Route>

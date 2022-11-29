@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { BiSend, BiSmile } from "react-icons/bi";
 import EmojiPicker from 'emoji-picker-react';
 
-function ChatInput({ handleMessageSend }) {
+function ChatInput({ handleMessageSend, handleTyping }) {
   const [showEmoji, setShowEmoji] = useState(false)
   const [currentMessage, setCurrentMessage] = useState('')
 
@@ -12,9 +12,16 @@ function ChatInput({ handleMessageSend }) {
     setShowEmoji(!showEmoji)
   }
 
+  console.log('render')
+
   const onFormSubmit = (evt) => {
     handleMessageSend(evt, currentMessage)
     setCurrentMessage('')
+  }
+
+  const handleInputChange = (evt) => {
+    setCurrentMessage(evt.target.value)
+    handleTyping(currentMessage !== '')
   }
 
   return (
@@ -22,7 +29,7 @@ function ChatInput({ handleMessageSend }) {
         <form onSubmit={onFormSubmit}>
           <input 
             className='input-field' type="text"
-            onChange={(evt) => setCurrentMessage(evt.target.value)}
+            onChange={handleInputChange}
             value={currentMessage}
           />
           <div className="button emoji-button">

@@ -7,16 +7,16 @@ function ChatContactCard({ contact }) {
   const navigate = useNavigate()
   const { setChatTarget } = useContext(ChatContext)
 
-  const handleCardClick = (contactUser) => {
-    setChatTarget(contactUser)
-    navigate(`/chat/${contactUser._id}`)
+  const handleCardClick = () => {
+    setChatTarget(contact)
+    navigate(`/chat?${contact.username ? 'user' : 'room'}=${contact._id}`)
   }
 
   return (
-    <Card onClick={() => handleCardClick(contact)}>
+    <Card onClick={handleCardClick}>
       <img src={`data:image/svg+xml;base64,${contact.avatarImage}`} alt='user-avatar'/>
       <div className='wrapper user-wrapper'>
-        <h2 className='user-name'>{contact.username}</h2>
+        <h2 className='user-name'>{contact.username || contact.roomname}</h2>
         <p className='user-message truncate'>Lorem ipsum dolor sit amet?</p>
       </div>
       <div className="wrapper">
