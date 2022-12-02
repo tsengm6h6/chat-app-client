@@ -1,41 +1,36 @@
-import React, { useState, useEffect } from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
 import ChatContactCard from '../Chat/ChatContactCard'
-import { userAPI } from '../../api/userApi'
-import { roomAPI } from '../../api/roomApi'
+import ChatContext from '../../chatContext'
+import { useEffect } from 'react'
+import { useState } from 'react'
 
-function MainContacts({ currentUser }) {
-  const [contactUsers, setContactUsers] = useState([])
-  const [rooms, setRooms] = useState([])
+function MainContacts({ onlineUsers, handleContactSelected }) {
+  const { userContacts, userRooms } = useContext(ChatContext)
+  const [userContactsWithOnlineStatus, setUserContactsWithOnlineStatus] = useState([])
 
   useEffect(() => {
-    const fetchUsers = async() => {
-      const { data } = await userAPI.getUsers()
-      setContactUsers(data.data.filter(({ _id}) => _id !== currentUser._id))
-    }
-
-    const fetchUserRooms = async() => {
-      const { data } = await roomAPI.getUserRooms({ userId: currentUser._id })
-      console.log('fetch room', data, currentUser._id)
-      setRooms(data.data)
-    }
-
-    fetchUsers()
-    fetchUserRooms()
-  }, [currentUser])
+    setUserContactsWithOnlineStatus(
+      userContacts.map(contact => ({ 
+        ...contact, 
+        isOnline : onlineUsers.indexOf(contact._id) > -1
+      }))
+    )
+  }, [onlineUsers, userContacts])
 
   return (
-    <CardContainer>
+    <CardContainer className=''>
       <h2 className='chat'>Chats</h2>
       <div className='chat-wrapper'>
         <div className='chat-category'>
           <div className="type">Rooms</div>
           <div className="contacts">
             {
-              rooms.map((room, index) => (
+              userRooms.map((room, index) => (
                   <ChatContactCard
                     key={`${index} - ${room.roomname}`}
                     contact={room}
+                    handleContactSelected={handleContactSelected}
                   />
               ))
             }
@@ -45,10 +40,11 @@ function MainContacts({ currentUser }) {
           <div className="type">Contacts</div>
           <div className="contacts">
           {
-            contactUsers.map((contact, index) => (
+            userContactsWithOnlineStatus.map((contact, index) => (
                 <ChatContactCard
                   key={`${index} - ${contact.username}`}
                   contact={contact}
+                  handleContactSelected={handleContactSelected}
                 />
             ))
           }
@@ -60,22 +56,33 @@ function MainContacts({ currentUser }) {
 }
 
 const CardContainer = styled.div `
-  background: #00000076;
   width: 100%;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  padding: 1.5rem 1rem;
-  /* background-color: whitesmoke; */
+  min-height: 0;
+  flex: 1;
+
+  &.hidden {
+    display: none;
+  }
+
+  @media screen and (min-width: 768px){
+    width: 300px;
+    flex: 0 0 auto;
+  }
 
   .chat {
     margin-bottom: 1rem;
   }
 
   .chat-wrapper {
-    padding: 1rem 8px 5.5rem 4px;
-    height: calc(100vh - 80px);
+    padding: 0 12px 8px;
+    width: 100%;
+    height: calc(100% - 40px);
     overflow-y: auto;
     border-radius: 8px;
+
+    @media screen and (min-width: 768px){
+      height: calc(100% - 40px);
+    }
 
     &::-webkit-scrollbar {
       background-color: #080420;

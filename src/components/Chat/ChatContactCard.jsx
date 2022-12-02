@@ -1,29 +1,27 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import styled from 'styled-components'
-import { useNavigate } from 'react-router-dom'
-import ChatContext from '../../chatContext'
+// import { useNavigate } from 'react-router-dom'
+// import ChatContext from '../../chatContext'
 
-function ChatContactCard({ contact }) {
-  const navigate = useNavigate()
-  const { setChatTarget } = useContext(ChatContext)
-
-  const handleCardClick = () => {
-    setChatTarget(contact)
-    navigate(`/chat?${contact.username ? 'user' : 'room'}=${contact._id}`)
+function ChatContactCard({ contact, handleContactSelected }) {
+  const timeFormatter = (time) => {
+    const [hour, min] = time.split('T')[1].split(':')
+    return hour + ':' + min
   }
-
   return (
-    <Card onClick={handleCardClick}>
-      <img src={`data:image/svg+xml;base64,${contact.avatarImage}`} alt='user-avatar'/>
-      <div className='wrapper user-wrapper'>
-        <h2 className='user-name'>{contact.username || contact.roomname}</h2>
-        <p className='user-message truncate'>Lorem ipsum dolor sit amet?</p>
+    <Card onClick={() => handleContactSelected(contact)}>
+      <div className={`avatar-wrapper ${contact.isOnline ? 'online' : 'offline'}`}>
+        <img src={`data:image/svg+xml;base64,${contact.avatarImage}`} alt='user-avatar'/>
       </div>
-      <div className="wrapper">
-        <span className='time'>time</span>
+      <div className='user-wrapper'>
+        <h2 className='user-name'>{contact.username || contact.roomname}</h2>
+        <p className='user-message truncate'>{contact.message?.message || ''}</p>
+      </div>
+      <div className="unread-wrapper">
         <div className='notify'>
           <span>4</span>
         </div>
+        <span className='time'>{contact.message ? timeFormatter(contact.message.updatedAt) : ''}</span>
       </div>
     </Card>
   )
@@ -44,9 +42,31 @@ const Card = styled.div `
     margin-bottom: 8px;
   }
 
-  img {
+  .avatar-wrapper {
     height: 4rem;
     width: 4rem;
+    border-radius: 50%;
+    padding: 4px;
+    transition: all 0.1s cubic-bezier(0.075, 0.82, 0.165, 1);
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    &.online {
+      border: 2px solid #997af0;
+      filter: grayscale(0) drop-shadow(0px 0px 4px #997af0);
+      opacity: 1;
+    }
+
+    &.offline {
+      border: 2px dotted #997af0;
+      filter: grayscale(60%);
+      opacity: 0.8;
+    }
   }
 
   .user-wrapper {
@@ -73,15 +93,8 @@ const Card = styled.div `
     }
   }
 
-  .time,
-  .notify {
-    display: block;
-  }
-
-  .time {
-    font-size: 1rem;
-    color: gray;
-    margin-bottom: 8px;
+  .unread-wrapper {
+    align-self: flex-end;
   }
 
   .notify {
@@ -93,6 +106,15 @@ const Card = styled.div `
     background-color: #997af0;
     text-align: center;
     margin-left: auto;
+    margin-bottom: 0.5rem;
+  }
+
+  .time {
+    display: block;
+    color: gray;
+    font-size: 0.5rem;
+    font-weight: 300;
+    margin-bottom: 4px;
   }
 `
 

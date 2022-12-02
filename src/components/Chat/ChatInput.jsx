@@ -48,7 +48,6 @@ function ChatInput({ handleMessageSend, handleTyping }) {
 }
 
 const InputContainer = styled.div `
-  padding: 1rem;
 
     .button {
       font-size: 1.25rem;
@@ -73,12 +72,20 @@ const InputContainer = styled.div `
 
     .EmojiPickerReact,
     .EmojiPickerReact.epr-main {
+      width: 300px !important;
+      height: 450px !important;
       position: absolute;
       bottom: 3.5rem;
-      right: -100px;
+      right: 50%;
+      transform: translateX(13%);
       background-color: #080420;
       box-shadow: 0 1px 10px #9a86f3;
       border-color: #9a86f3;
+
+      @media screen and (min-width: 768px) {
+        width: 350px !important;
+        height: 480px !important;
+      }
       
       .epr-body::-webkit-scrollbar {
         background-color: #080420;

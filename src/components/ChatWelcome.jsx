@@ -10,7 +10,6 @@ function ChatWelcome() {
 }
 
 const ChatWrapper = styled.div `
-  background-color: #080420;
   width: 100%;
   height: 100%;
   display: flex;

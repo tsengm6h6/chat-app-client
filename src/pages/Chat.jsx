@@ -18,7 +18,7 @@ function Chat() {
   const ws = useRef(null)
   const [searchParams] = useSearchParams()
 
-  // 檢查當下聊天模式：1 對 1 or Room
+  // TODO: 檢查當下聊天模式：1 對 1 or Room
   useEffect(()=> {
     console.log(searchParams.get('user'))
     console.log(searchParams.get('room'))
@@ -26,7 +26,7 @@ function Chat() {
     setChatType(type)
   }, [searchParams])
 
-  // 連線 socket & 監聽 event
+  // TODO: 連線 socket & 監聽 event
   useEffect(() => {
     const socket = io(`${process.env.REACT_APP_SERVER_URL}`)
     socket.on('connect', () => {
@@ -91,7 +91,7 @@ function Chat() {
     }
   }, [ws, currentUser, chatTarget, chatType])
 
-  // isTyping 顯示
+  // TODO: isTyping 顯示
   useEffect(() => {
     if (isTyping) {
       ws.current.emit('user-typing', {
@@ -103,7 +103,7 @@ function Chat() {
     }
   }, [isTyping, currentUser, chatTarget, chatType])
 
-  // 導航守衛
+  // TODO: 導航守衛
   useEffect(() => {
     if (!currentUser) {
       const existedUser = localStorage.getItem(process.env.REACT_APP_LOCAL_KEY)
@@ -117,7 +117,7 @@ function Chat() {
     } 
   }, [navigate, currentUser, setCurrentUser])
 
-  // 取得 DB 裡的歷史訊息
+  // TODO: 取得 DB 裡的歷史訊息
   useEffect(() => {
     if (currentUser && chatType) {
       const fetchMsg = async() => {
@@ -140,6 +140,7 @@ function Chat() {
     }
   }, [currentUser, chatTarget, chatType])
 
+  // TODO:
   const onMessageSend = async (evt, newMessage) => {
     evt.preventDefault()
     const { data } = await messageAPI.postMessage({

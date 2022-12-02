@@ -21,7 +21,7 @@ function Register() {
     const existedUser = localStorage.getItem(process.env.REACT_APP_LOCAL_KEY)
     if (existedUser) {
       setCurrentUser(existedUser)
-      navigate('/main')
+      navigate('/')
     }
   }, [navigate, setCurrentUser])
 
@@ -33,7 +33,7 @@ function Register() {
       if (data.status) {
         localStorage.setItem(process.env.REACT_APP_LOCAL_KEY, JSON.stringify(data.user))
         setCurrentUser(data.user)
-        navigate('/main')
+        navigate('/')
       } else {
         toastError(data.msg);
       }

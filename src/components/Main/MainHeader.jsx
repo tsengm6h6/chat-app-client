@@ -1,24 +1,18 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
 import { BiSearchAlt, BiGroup, BiCog, BiLogOutCircle } from "react-icons/bi"
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import ChatContext from '../../chatContext'
 
-function MainHeader({ currentUser }) {
-  const navigate = useNavigate()
-  const { setCurrentUser } = useContext(ChatContext)
-
-  const logout = () => {
-    // socket.current.emit('logout', currentUser._id)
-    localStorage.removeItem(process.env.REACT_APP_LOCAL_KEY)
-    setCurrentUser(null)
-    navigate('/login')
-  }
-
+function MainHeader({ handleLogout }) {
+  const { currentUser } = useContext(ChatContext)
+  
   return (
     <Header>
       <div className="user-card">
-        <img src={`data:image/svg+xml;base64,${currentUser.avatarImage}`} alt="user-avatar" />
+        <div className='avatar-wrapper online'>
+          <img src={`data:image/svg+xml;base64,${currentUser.avatarImage}`} alt="user-avatar" />
+        </div>
         <h1>{currentUser.username}</h1>
       </div>
       <div className='icons'>
@@ -32,7 +26,7 @@ function MainHeader({ currentUser }) {
           <BiCog />
         </button>
         <button className="icon logout">
-          <BiLogOutCircle onClick={() => logout()}/>
+          <BiLogOutCircle onClick={handleLogout}/>
       </button>
       </div>
     </Header>
@@ -43,6 +37,7 @@ const Header = styled.header `
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 60px;
   padding: 1.5rem 1rem;
 
   .user-card {
@@ -50,9 +45,25 @@ const Header = styled.header `
     align-items: center;
     gap: 8px;
 
-    img {
-      width: 2rem;
-      height: 2rem;
+    .avatar-wrapper {
+      height: 2.5rem;
+      width: 2.5rem;
+      border-radius: 50%;
+      padding: 3px;
+      transition: all 0.1s cubic-bezier(0.075, 0.82, 0.165, 1);
+      
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      &.online {
+        border: 1.5px solid #997af0;
+        filter: drop-shadow(0px 0px 2px #997af0);
+        opacity: 1;
+      }
     }
 
     h1 {
@@ -70,7 +81,6 @@ const Header = styled.header `
       height: 2rem;
       border: none;
       border-radius: 50%;
-      /* background-color: white; */
       background-color: #00000076;
       color: #997af0;
       display: flex;

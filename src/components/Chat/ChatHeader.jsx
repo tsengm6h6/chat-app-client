@@ -1,29 +1,39 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { BiLeftArrowCircle } from "react-icons/bi"
 import { Link } from 'react-router-dom'
-import ChatContext from '../../chatContext'
 
-function ChatHeader() {
-  const { chatTarget } = useContext(ChatContext)
-
+function ChatHeader({ chatType, chatTarget, chatRoomUsersData }) {
   return (
     <Header>
-      <Link to="/main" className="icon">
+      <Link to="/" className="icon">
         <BiLeftArrowCircle/>
       </Link>
+      <div className='room-members'>
+        {
+          chatRoomUsersData.map(({ userId, avatarImage, isOnline }) => (
+            <div 
+              key={userId} 
+              className={`img-wrapper ${isOnline ? 'online' : 'offline'}`} >
+              <img
+                src={`data:image/svg+xml;base64,${avatarImage}`} 
+                alt="user-avatar" />
+            </div>
+          ))
+        }
+      </div>
       <div className="room-info">
-        <img src={`data:image/svg+xml;base64,${chatTarget?.avatarImage}`} alt="user-avatar" />
-        <h1>{chatTarget?.username || chatTarget?.roomname}</h1>
+        <img 
+          src={`data:image/svg+xml;base64,${chatTarget?.avatarImage}`} 
+          alt="user-avatar" />
+        <h1>{chatType === 'room' ? chatTarget.roomname : chatTarget.username}</h1>
       </div>
     </Header>
   )
 }
 
 const Header = styled.header `
-  padding: 1.5rem 1rem;
   position: relative;
-  background-color: #131324;
 
   .icon {
     position: absolute;
@@ -34,22 +44,67 @@ const Header = styled.header `
   }
 
   .room-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
+    margin-top: 0.5rem;
 
     img {
+      display: block;
       width: 4rem;
       height: 4rem;
+      margin: 0 auto;
       background-color: papayawhip;
       border-radius: 50%;
     }
 
     h1 {
       font-size: 1rem;
-      max-width: 200px;
+      margin: 0.5rem 0;
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  .room-members {
+    position: absolute;
+    top: 1.5rem;
+    right: 2px;
+    display: flex;
+
+    .img-wrapper {
+      width: 1.5rem;
+      height: 1.5rem;
+      transform: scale(1.25);
+      border-radius: 50%;
+      padding: 1px;
+      transition: all 0.1s cubic-bezier(0.075, 0.82, 0.165, 1);
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      &.online {
+        border: 2px solid #997af0;
+        filter: grayscale(0);
+        opacity: 1;
+        z-index: 2;
+      }
+
+      &.offline {
+        border: 1px dotted #997af0;
+        filter: grayscale(60%);
+        opacity: 0.8;
+        z-index: 1;
+      }
+    }
+
+    @media screen and (min-width: 768px){
+      .img-wrapper {
+        width: 2rem;
+        height: 2rem;
+        transform: scale(1.25);
+      }
     }
   }
 `

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import styled from 'styled-components'
 
-function ChatMessages({ messages }) {
+function ChatMessages({ messages, chatRoomUsersData }) {
   const messageEl = useRef()
 
   const timeFormatter = (time) => {
@@ -35,6 +35,7 @@ function ChatMessages({ messages }) {
 
 const MessagesWrapper = styled.div `
   padding: 1rem;
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 12px;

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 function RoomHeader({ roomAvatar, roomName, handleRoomNameChange }) {
   return (
     <Header>
-      <Link to="/main" className="icon">
+      <Link to="/" className="icon">
         <BiLeftArrowCircle/>
       </Link>
       <div className="room-info">

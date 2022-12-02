@@ -24,7 +24,7 @@ function ChatAvatarSetting() {
         navigate('/login')
       }
     } else if (currentUser.avatarImage !== '') {
-      navigate('/main')
+      navigate('/')
     } 
   }, [navigate, currentUser, setCurrentUser])
 
@@ -64,7 +64,7 @@ function ChatAvatarSetting() {
         ...currentUser,
         avatarImage: data.image
       })
-      navigate('/main')
+      navigate('/')
     }
   }
 
