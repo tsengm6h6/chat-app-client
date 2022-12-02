@@ -110,6 +110,7 @@ function NewMain() {
       // TODO:
       console.log(`${userId} is ${type}`)
       setOnlineUsers(onlineUsersId)
+      setChatTarget(prev => prev._id === userId ? {...prev, isOnline: type === 'online'} : prev)
     }
 
     socket.on('online-notify', handleOnlineOfflineNotify)
@@ -214,6 +215,7 @@ function NewMain() {
                   chatType={chatType}
                   chatTarget={chatTarget}
                   chatRoomUsers={chatRoomUsers}
+                  onlineUsers={onlineUsers}
                   messages={messages}
                   handleMessageSend={onMessageSend}
                   handleTyping={setIsTyping} />

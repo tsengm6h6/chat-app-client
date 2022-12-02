@@ -5,7 +5,7 @@ import ChatInput from '../Chat/ChatInput'
 import styled from 'styled-components'
 import chatContext from '../../chatContext'
 
-function ChatRoom({ chatType, chatTarget, chatRoomUsers, messages, handleMessageSend, handleTyping }) {
+function ChatRoom({ chatType, chatTarget, chatRoomUsers, onlineUsers, messages, handleMessageSend, handleTyping }) {
   console.log('chatTarget', chatTarget)
   const [chatRoomUsersData, setChatRoomUsersData] = useState([])
   const { userContacts } = useContext(chatContext)
@@ -15,13 +15,13 @@ function ChatRoom({ chatType, chatTarget, chatRoomUsers, messages, handleMessage
       setChatRoomUsersData(
         () => chatRoomUsers.reduce((prev, curr) => {
           const userContact = userContacts.find(contact => contact._id === curr.userId)
-          return [...prev, { ...curr, avatarImage: userContact?.avatarImage || null }]
+          return [...prev, { ...curr, avatarImage: userContact?.avatarImage || null, isOnline: onlineUsers.indexOf(curr.userId) > -1 }]
         }, [])
       )
     } else {
       setChatRoomUsersData([])
     }
-  }, [chatType, chatRoomUsers, userContacts])
+  }, [chatType, chatRoomUsers, userContacts, onlineUsers])
 
   return (
     <ChatWrapper className=''>

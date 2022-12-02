@@ -23,9 +23,11 @@ function ChatHeader({ chatType, chatTarget, chatRoomUsersData }) {
         }
       </div>
       <div className="room-info">
-        <img 
-          src={`data:image/svg+xml;base64,${chatTarget?.avatarImage}`} 
-          alt="user-avatar" />
+        <div className={`avatar-wrapper ${chatTarget.isOnline ? 'online' : 'offline'}`} >
+          <img 
+            src={`data:image/svg+xml;base64,${chatTarget?.avatarImage}`} 
+            alt="user-avatar" />
+        </div>
         <h1>{chatType === 'room' ? chatTarget.roomname : chatTarget.username}</h1>
       </div>
     </Header>
@@ -46,13 +48,35 @@ const Header = styled.header `
   .room-info {
     margin-top: 0.5rem;
 
-    img {
-      display: block;
+    .avatar-wrapper {
       width: 4rem;
       height: 4rem;
       margin: 0 auto;
-      background-color: papayawhip;
+      transform: scale(1.25);
       border-radius: 50%;
+      padding: 4px;
+      transition: all 0.1s cubic-bezier(0.075, 0.82, 0.165, 1);
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+      }
+
+      &.online {
+        border: 2px solid #997af0;
+        filter: grayscale(0) drop-shadow(0px 0px 2px #997af0);
+        opacity: 1;
+        z-index: 2;
+      }
+
+      &.offline {
+        border: 1px dotted #997af0;
+        filter: grayscale(60%);
+        opacity: 0.8;
+        z-index: 1;
+    }
     }
 
     h1 {
