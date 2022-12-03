@@ -13,8 +13,8 @@ export const ChatProvider = ({ children }) => {
     const fetchContacts = async() => {
       const { data } = await userAPI.getUserContacts({ userId: currentUser._id })
       const { rooms, users } = data.data
-      setUserContacts(users.length > 0 ? users : [])
-      setUserRooms(rooms.length > 0 ? rooms : [])
+      setUserContacts(users.length > 0 ? users.map(user => ({ ...user, type: 'user'})) : [])
+      setUserRooms(rooms.length > 0 ? rooms.map(room => ({ ...room, type: 'room'})) : [])
     }
     
     if (currentUser?._id) {

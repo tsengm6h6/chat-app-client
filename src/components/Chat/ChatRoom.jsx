@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import chatContext from '../../chatContext'
 
 function ChatRoom({ chatType, chatTarget, chatRoomUsers, onlineUsers, messages, handleMessageSend, handleTyping }) {
-  console.log('chatTarget', chatTarget)
+  console.log('chat room render')
   const [chatRoomUsersData, setChatRoomUsersData] = useState([])
   const { userContacts } = useContext(chatContext)
 

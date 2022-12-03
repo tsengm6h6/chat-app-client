@@ -13,16 +13,19 @@ import { toastNormal } from '../utils/toastOptions'
 function NewMain() {
   const navigate = useNavigate()
   const { currentUser, setCurrentUser } = useContext(ChatContext)
-  // const [chatTarget, setChatTarget] = useState(null)
-  const [chatType, setChatType] = useState(null)
+  const [chatTarget, setChatTarget] = useState(null)
+  const [chatUserId, setChatUserId] = useState(null)
+  // const [chatType, setChatType] = useState(null)
   const [chatRoomUsers, setChatRoomUsers] = useState([])
   const [onlineUsers, setOnlineUsers] = useState([])
   const [messages, setMessages] = useState([])
   const [isTyping, setIsTyping] = useState(false)
 
-  const chatTarget = useRef(null)
   const socket = useRef(null)
+  const chatTargetRef = useRef()
+  const chatUserIdRef = useRef()
 
+  console.log('main re-render', chatUserId)
   // 導航守衛
   useEffect(() => {
     if (!currentUser) {
@@ -37,15 +40,23 @@ function NewMain() {
     } 
   }, [navigate, currentUser, setCurrentUser])
 
+  useEffect(() => {
+    chatTargetRef.current = chatTarget
+  }, [chatTarget, chatUserId])
+
+  useEffect(() => {
+    chatUserIdRef.current = chatUserId
+  }, [chatUserId])
+
   // 取得 user message
   // 取得 DB 裡的歷史訊息
   useEffect(() => {
-    if (currentUser && chatType) {
+    if (currentUser && chatTarget) {
       const fetchMsg = async() => {
         const { data } = await messageAPI.getMessages({
-          type: chatType,
+          type: chatTarget.type,
           from: currentUser._id,
-          to: chatTarget.current._id,
+          to: chatTarget._id,
         })
         console.log('message', data)
         setMessages(formatMsg(data))
@@ -60,17 +71,38 @@ function NewMain() {
       }
       fetchMsg()
     }
-  }, [currentUser, chatTarget, chatType])
+  }, [currentUser, chatTarget])
 
-  useEffect(() => {
-    console.log('chat type', chatType)
-    if (chatType === 'room') {
-      socket.current.emit('ENTER_CHAT_ROOM', {
-        roomId: chatTarget.current._id,
-        enterUserId: currentUser._id
-      })
-    }
-  }, [chatType, currentUser])
+  // useEffect(() => {
+  //   console.log('chat type', chatTarget.type)
+  //   if (chatTarget.type === 'room') {
+  //     socket.current.emit('ENTER_CHAT_ROOM', {
+  //       roomId: chatTarget._id,
+  //       enterUserId: currentUser._id
+  //     })
+  //   }
+  // }, [chatTarget, currentUser])
+
+  // useEffect(() => {
+  //   // TODO: id 不同 ＆ 原本是 room
+  //   if ((prevChatTarget.current?._id !== chatTarget?._id)) {
+  //     // 原本是群組 -> 離開
+  //     if (prevChatTarget.current?.type === 'room') {
+  //       socket.current.emit('LEAVE_CHAT_ROOM', {
+  //         roomId: prevChatTarget.current?._id,
+  //         leaveUserId: currentUser._id
+  //       })
+  //     }
+
+  //     // 新加入是群組 -> JOIN
+  //     if (chatTarget.type === 'room') {
+  //       socket.current.emit('ENTER_CHAT_ROOM', {
+  //         roomId: chatTarget._id,
+  //         enterUserId: currentUser._id
+  //       })
+  //     }
+  //   }
+  // }, [chatTarget, currentUser, chatUserId])
 
   const handleActive = useCallback((onlineUsers) => {
     setOnlineUsers(onlineUsers.map(({ userId }) => userId))
@@ -78,9 +110,10 @@ function NewMain() {
   }, [])
 
   const handleReceiveMsg = useCallback((data) => {
+    console.log('recevive', chatUserIdRef.current)
     const { type, message, senderId } = data
      // 一對一時正在聊天的人和傳訊的人相同才加入顯示
-    if (type === 'room' || (type === 'user' && senderId === chatTarget.current?._id)) {
+    if (type === 'room' || (type === 'user' && senderId === chatUserIdRef.current)) {
         setMessages(prevMessages  => [...prevMessages, {
           message,
           fromSelf: false,
@@ -90,21 +123,23 @@ function NewMain() {
       }
   }, [])
 
-  const handleTypingNotify = useCallback(() => {
+  const handleTypingNotify = useCallback(({ typingId }) => {
+    console.log('target', chatTarget, chatTarget)
     // 只有目標對象會收到，TODO: 顯示在 message 頁面
-    const userName = chatTarget.current.username
+    const userName = chatTarget?.username || ''
     toastNormal(`${userName} is typing`)
+    console.log('userName', userName)
   }, [])
 
-  useEffect(() => {
-    if (isTyping) {
-      socket.current.emit('USER_TYPING', {
-        type: chatType,
-        senderId: currentUser._id,
-        receiverId: chatTarget.current._id,
-      })
-    }
-  }, [isTyping, currentUser, chatTarget, chatType])
+  // useEffect(() => {
+  //   if (isTyping) {
+  //     socket.current.emit('USER_TYPING', {
+  //       type: chatTarget?.type,
+  //       senderId: currentUser._id,
+  //       receiverId: chatTarget?._id,
+  //     })
+  //   }
+  // }, [isTyping, currentUser])
 
   useEffect(() => {
     if (currentUser?._id) {
@@ -113,27 +148,47 @@ function NewMain() {
       socket.current.on('ONLINE_USER_CHANGED', handleActive)
       socket.current.on('RECEIVE_MESSAGE', handleReceiveMsg)
       socket.current.on('TYPING_NOTIFY', handleTypingNotify)
-      socket.current.on('NEW_USER_JOIN_GROUP_CHAT', ({ joinId }) => {
-        console.log('Join room' + '' + joinId)
+      socket.current.on('NEW_USER_JOIN_GROUP_CHAT', ({ joinId, username }) => {
+        console.log(`Join room ${joinId}`)
+        toastNormal(`${username} 已加入聊天`)
       })
-      socket.current.on('USER_LEAVE_CHAT_ROOM',({ leaveId }) => {
-        console.log('Leave room' + '' + leaveId)
+      socket.current.on('USER_LEAVE_CHAT_ROOM',({ leaveId, username }) => {
+        console.log(`Leave room ${leaveId}`)
+        toastNormal(`${username} 已離開聊天`)
       })
     }
   }, [currentUser, handleActive, handleReceiveMsg, handleTypingNotify])
 
-  const onContactSelect = (payload) => {
-    // TODO: 不同 ＆ 原本是 room
-    if (payload?._id !== chatTarget.current?._id) {
-      // 換房間
-      socket.current.emit('LEAVE_CHAT_ROOM', {
-        roomId: chatTarget.current?._id,
-        leaveUserId: currentUser._id
-      })
+  const onContactSelect = (newChatTarget) => {
+    console.log('selected', newChatTarget)
+    setChatUserId(newChatTarget._id)
+    setChatTarget(newChatTarget)
+
+    console.log('new-target', newChatTarget._id)
+    console.log('ref target', chatUserIdRef)
+
+    // TODO: id 不同 ＆ 原本是 room
+    if ((chatUserIdRef.current !== newChatTarget._id)) {
+      // 原本是群組 -> 離開
+      if (chatTargetRef.current?.type === 'room') {
+        socket.current.emit('LEAVE_CHAT_ROOM', {
+          roomId: chatUserIdRef.current,
+          leaveUserId: currentUser._id,
+          leaveUserName:  currentUser.username
+        })
+      }
+
+      // 新加入是群組 -> JOIN
+      if (newChatTarget.type === 'room') {
+        socket.current.emit('ENTER_CHAT_ROOM', {
+          roomId: newChatTarget._id,
+          enterUserId: currentUser._id,
+          enterUserName:  currentUser.username
+        })
+      }
     }
-    console.log('selected', payload)
-    chatTarget.current = payload
-    setChatType(payload.roomname ? 'room' : 'user')
+    
+    // setChatType(payload.roomname ? 'room' : 'user')
     // setChatRoomUsers(
     //   payload.roomname
     //     ? payload.users
@@ -143,12 +198,13 @@ function NewMain() {
     // )
   }
 
+
   const onMessageSend = async (evt, newMessage) => {
     evt.preventDefault()
     const { data } = await messageAPI.postMessage({
-        type: chatType,
+        type: chatTarget?.type,
         from: currentUser._id,
-        to: chatTarget.current._id
+        to: chatTarget?._id
       }, {
         message: newMessage,
       }
@@ -165,10 +221,10 @@ function NewMain() {
 
     // TODO: 用 socket 才能同時收到，而不是從 db 撈才有
     socket.current.emit('SEND_MESSAGE', {
-      type: chatType,
+      type: chatTarget?.type,
       message: newMessage,
       senderId: currentUser._id,
-      receiverId: chatTarget.current._id
+      receiverId: chatTarget?._id
     })
   }
 
@@ -191,11 +247,11 @@ function NewMain() {
               onlineUsers={onlineUsers}
               handleContactSelected={onContactSelect} />
             {
-              chatType === null
+              chatTarget === null
               ? <ChatWelcome />
               : <ChatRoom
-                  chatType={chatType}
-                  chatTarget={chatTarget.current}
+                  chatType={chatTarget.type}
+                  chatTarget={chatTarget}
                   chatRoomUsers={chatRoomUsers}
                   onlineUsers={onlineUsers}
                   messages={messages}
