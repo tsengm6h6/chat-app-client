@@ -21,6 +21,7 @@ function ChatMessages({ messages, chatRoomUsersData }) {
             key={index}
             className={`message-wrapper ${msg.fromSelf ? 'sended' : 'received'}`}>
             <span>{timeFormatter(msg.time)}</span>
+            {` sender: ${msg.sender}`}
             <div
               ref={messageEl}
               className={`message ${msg.fromSelf ? 'sended' : 'received'}`}>
