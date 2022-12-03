@@ -1,18 +1,22 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import styled from 'styled-components'
 import { BiSend, BiSmile } from "react-icons/bi";
 import EmojiPicker from 'emoji-picker-react';
 
-function ChatInput({ handleMessageSend, handleTyping }) {
+function ChatInput({ handleMessageSend, handleTyping, isTyping }) {
   const [showEmoji, setShowEmoji] = useState(false)
   const [currentMessage, setCurrentMessage] = useState('')
+
+  const typingRef = useRef()
+
+  useEffect(() => {
+    typingRef.current = currentMessage !== ''
+  }, [currentMessage])
 
   const handleEmojiClick = (emoji, evt) => {
     setCurrentMessage((prev) => prev += emoji.emoji)
     setShowEmoji(!showEmoji)
   }
-
-  console.log('render')
 
   const onFormSubmit = (evt) => {
     handleMessageSend(evt, currentMessage)
@@ -21,7 +25,9 @@ function ChatInput({ handleMessageSend, handleTyping }) {
 
   const handleInputChange = (evt) => {
     setCurrentMessage(evt.target.value)
-    handleTyping(currentMessage !== '')
+    if (isTyping !== typingRef.current) {
+      handleTyping(typingRef.current)
+    }
   }
 
   return (

@@ -124,22 +124,23 @@ function NewMain() {
   }, [])
 
   const handleTypingNotify = useCallback(({ typingId }) => {
-    console.log('target', chatTarget, chatTarget)
+    console.log('target', chatUserIdRef.current, chatTargetRef.current)
     // 只有目標對象會收到，TODO: 顯示在 message 頁面
-    const userName = chatTarget?.username || ''
+    const userName = chatTargetRef.current?.username || ''
     toastNormal(`${userName} is typing`)
     console.log('userName', userName)
   }, [])
 
-  // useEffect(() => {
-  //   if (isTyping) {
-  //     socket.current.emit('USER_TYPING', {
-  //       type: chatTarget?.type,
-  //       senderId: currentUser._id,
-  //       receiverId: chatTarget?._id,
-  //     })
-  //   }
-  // }, [isTyping, currentUser])
+  useEffect(() => {
+    console.log('is typing', isTyping, chatTargetRef.current)
+    if (isTyping && chatTargetRef.current) {
+      socket.current.emit('USER_TYPING', {
+        type: chatTargetRef.current.type,
+        senderId: currentUser._id,
+        receiverId: chatTargetRef.current._id,
+      })
+    }
+  }, [isTyping, currentUser])
 
   useEffect(() => {
     if (currentUser?._id) {
@@ -256,6 +257,7 @@ function NewMain() {
                   onlineUsers={onlineUsers}
                   messages={messages}
                   handleMessageSend={onMessageSend}
+                  isTyping={isTyping}
                   handleTyping={setIsTyping} />
             }
           </div>

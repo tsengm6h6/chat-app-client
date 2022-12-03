@@ -5,7 +5,7 @@ import ChatInput from '../Chat/ChatInput'
 import styled from 'styled-components'
 import chatContext from '../../chatContext'
 
-function ChatRoom({ chatType, chatTarget, chatRoomUsers, onlineUsers, messages, handleMessageSend, handleTyping }) {
+function ChatRoom({ chatType, chatTarget, chatRoomUsers, onlineUsers, messages, handleMessageSend, isTyping, handleTyping }) {
   console.log('chat room render')
   const [chatRoomUsersData, setChatRoomUsersData] = useState([])
   const { userContacts } = useContext(chatContext)
@@ -34,6 +34,7 @@ function ChatRoom({ chatType, chatTarget, chatRoomUsers, onlineUsers, messages, 
         chatRoomUsersData={chatRoomUsersData} />
       <ChatInput 
         handleMessageSend={handleMessageSend}
+        isTyping={isTyping}
         handleTyping={handleTyping} />
     </ChatWrapper>
   )
