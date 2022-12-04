@@ -35,7 +35,7 @@ function ChatRoom({ chatTarget, onlineUsers, messages, handleMessageSend, isTypi
           const userContact = userContacts.find(contact => contact._id === userId)
           return {
             ...userContact,
-            avatarImage: userContact?.avatarImage  || null,
+            avatarImage: userContact?.avatarImage  || '',
             isOnline: onlineUsers.indexOf(userId) > -1
           }
         })
