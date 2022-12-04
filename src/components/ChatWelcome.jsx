@@ -10,12 +10,16 @@ function ChatWelcome() {
 }
 
 const ChatWrapper = styled.div `
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  display: none;
+
+  @media screen and (min-width: 768px){
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
 
   img {
     width: 500px;

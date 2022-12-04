@@ -5,7 +5,7 @@ import ChatContext from '../../chatContext'
 import { useEffect } from 'react'
 import { useState } from 'react'
 
-function MainContacts({ onlineUsers, handleContactSelected }) {
+function MainContacts({ chatTarget, onlineUsers, handleContactSelected }) {
   const { userContacts, userRooms, currentUser } = useContext(ChatContext)
   const [userContactsWithOnlineStatus, setUserContactsWithOnlineStatus] = useState([])
   const [userRoomsWithOnlineStatus, setUserRoomsWithOnlineStatus] = useState([])
@@ -31,7 +31,7 @@ function MainContacts({ onlineUsers, handleContactSelected }) {
   }, [onlineUsers, userRooms, currentUser])
 
   return (
-    <CardContainer className=''>
+    <CardContainer className={`chat-control ${chatTarget?._id && 'target-selected'}`}>
       <h2 className='chat'>Chats</h2>
       <div className='chat-wrapper'>
         <div className='chat-category'>
@@ -72,8 +72,18 @@ const CardContainer = styled.div `
   min-height: 0;
   flex: 1;
 
-  &.hidden {
-    display: none;
+  &.chat-control {
+    display: block;
+
+    &.target-selected {
+      display: none;
+    }
+
+    @media screen and (min-width: 768px){
+      &.target-selected {
+        display: block;
+      }
+    }
   }
 
   @media screen and (min-width: 768px){

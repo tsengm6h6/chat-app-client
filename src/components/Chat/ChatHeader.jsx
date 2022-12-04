@@ -1,14 +1,18 @@
 import React from 'react'
 import styled from 'styled-components'
 import { BiLeftArrowCircle } from "react-icons/bi"
-import { Link } from 'react-router-dom'
 
-function ChatHeader({ chatUserHeaderInfo, chatRoomUsersData }) {
+function ChatHeader({ handleContactSelected, chatUserHeaderInfo, chatRoomUsersData }) {
+  
+  const onClickBack = () => {
+    handleContactSelected(null)
+  }
+
   return (
     <Header>
-      <Link to="/" className="icon">
+      <div onClick={onClickBack} className="icon">
         <BiLeftArrowCircle/>
-      </Link>
+      </div>
       <div className='room-members'>
         {
           chatRoomUsersData.map(({ _id, avatarImage, isOnline }) => (
@@ -43,6 +47,10 @@ const Header = styled.header `
     color: #997af0;
     top: 1.5rem;
     left: 1rem;
+
+    @media screen and (min-width: 768px){
+      display: none;
+    }
   }
 
   .room-info {

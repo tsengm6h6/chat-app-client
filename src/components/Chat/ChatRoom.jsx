@@ -5,7 +5,7 @@ import ChatInput from '../Chat/ChatInput'
 import styled from 'styled-components'
 import chatContext from '../../chatContext'
 
-function ChatRoom({ chatTarget, onlineUsers, messages, handleMessageSend, isTyping, handleTyping }) {
+function ChatRoom({ chatTarget, handleContactSelected, onlineUsers, messages, handleMessageSend, isTyping, handleTyping }) {
   console.log('chat room render')
   const [chatRoomUsersData, setChatRoomUsersData] = useState([])
   const [chatUserHeaderInfo, setChatUserHeaderInfo] = useState({})
@@ -46,10 +46,11 @@ function ChatRoom({ chatTarget, onlineUsers, messages, handleMessageSend, isTypi
   }, [chatTarget, userContacts, currentUser, onlineUsers])
 
   return (
-    <ChatWrapper className=''>
+    <ChatWrapper className={`chat-control ${chatTarget?._id && 'target-selected'}`}>
       { chatTarget && (
         <>
         <ChatHeader
+          handleContactSelected={handleContactSelected}
           chatUserHeaderInfo={chatUserHeaderInfo}
           chatRoomUsersData={chatRoomUsersData} />
         <ChatMessages 
@@ -69,13 +70,20 @@ const ChatWrapper = styled.div `
   width: 100%;
   flex: 1;
   min-height: 0;
-  display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 0.5rem;
 
-  &.hidden {
+  &.chat-control {
     display: none;
+
+    &.target-selected {
+      display: flex;
+    }
+
+    @media screen and (min-width: 768px){
+      display: flex;
+    }
   }
 
   @media screen and (min-width: 768px){
