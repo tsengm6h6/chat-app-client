@@ -6,8 +6,9 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 
 function MainContacts({ onlineUsers, handleContactSelected }) {
-  const { userContacts, userRooms } = useContext(ChatContext)
+  const { userContacts, userRooms, currentUser } = useContext(ChatContext)
   const [userContactsWithOnlineStatus, setUserContactsWithOnlineStatus] = useState([])
+  const [userRoomsWithOnlineStatus, setUserRoomsWithOnlineStatus] = useState([])
 
   useEffect(() => {
     setUserContactsWithOnlineStatus(
@@ -18,6 +19,17 @@ function MainContacts({ onlineUsers, handleContactSelected }) {
     )
   }, [onlineUsers, userContacts])
 
+  useEffect(() => {
+    setUserRoomsWithOnlineStatus(
+      userRooms.map(contact => ({ 
+        ...contact, 
+        isOnline : contact.users
+        .filter(user => user !== currentUser._id)
+        .some(userId => onlineUsers.indexOf(userId) > -1)
+      }))
+    )
+  }, [onlineUsers, userRooms, currentUser])
+
   return (
     <CardContainer className=''>
       <h2 className='chat'>Chats</h2>
@@ -26,7 +38,7 @@ function MainContacts({ onlineUsers, handleContactSelected }) {
           <div className="type">Rooms</div>
           <div className="contacts">
             {
-              userRooms.map((room, index) => (
+              userRoomsWithOnlineStatus.map((room, index) => (
                   <ChatContactCard
                     key={`${index} - ${room.roomname}`}
                     contact={room}

@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { BiLeftArrowCircle } from "react-icons/bi"
 import { Link } from 'react-router-dom'
 
-function ChatHeader({ chatType, chatTarget, chatRoomUsersData }) {
+function ChatHeader({ chatUserHeaderInfo, chatRoomUsersData }) {
   return (
     <Header>
       <Link to="/" className="icon">
@@ -11,9 +11,9 @@ function ChatHeader({ chatType, chatTarget, chatRoomUsersData }) {
       </Link>
       <div className='room-members'>
         {
-          chatRoomUsersData.map(({ userId, avatarImage, isOnline }) => (
+          chatRoomUsersData.map(({ _id, avatarImage, isOnline }) => (
             <div 
-              key={userId} 
+              key={_id} 
               className={`img-wrapper ${isOnline ? 'online' : 'offline'}`} >
               <img
                 src={`data:image/svg+xml;base64,${avatarImage}`} 
@@ -23,12 +23,12 @@ function ChatHeader({ chatType, chatTarget, chatRoomUsersData }) {
         }
       </div>
       <div className="room-info">
-        <div className={`avatar-wrapper ${chatTarget.isOnline ? 'online' : 'offline'}`} >
+        <div className={`avatar-wrapper ${chatUserHeaderInfo.isOnline ? 'online' : 'offline'}`} >
           <img 
-            src={`data:image/svg+xml;base64,${chatTarget?.avatarImage}`} 
+            src={`data:image/svg+xml;base64,${chatUserHeaderInfo?.avatarImage}`} 
             alt="user-avatar" />
         </div>
-        <h1>{chatType === 'room' ? chatTarget.roomname : chatTarget.username}</h1>
+        <h1>{chatUserHeaderInfo.name}</h1>
       </div>
     </Header>
   )

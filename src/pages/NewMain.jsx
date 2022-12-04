@@ -16,7 +16,7 @@ function NewMain() {
   const [chatTarget, setChatTarget] = useState(null)
   const [chatUserId, setChatUserId] = useState(null)
   // const [chatType, setChatType] = useState(null)
-  const [chatRoomUsers, setChatRoomUsers] = useState([])
+  // const [chatRoomUsers, setChatRoomUsers] = useState([])
   const [onlineUsers, setOnlineUsers] = useState([])
   const [messages, setMessages] = useState([])
   const [isTyping, setIsTyping] = useState(false)
@@ -230,8 +230,8 @@ function NewMain() {
   }
 
   const onLogout = () => {
-    socket.current.emit('USER_OFFLINE', currentUser._id)
-    // socket.disconnect() // 切斷連線
+    socket.current.emit('USER_OFFLINE', currentUser._id) // 先更新才能切斷連線
+    socket.current.disconnect()
     localStorage.removeItem(process.env.REACT_APP_LOCAL_KEY)
     setCurrentUser(null)
     navigate('/login')
@@ -251,9 +251,7 @@ function NewMain() {
               chatTarget === null
               ? <ChatWelcome />
               : <ChatRoom
-                  chatType={chatTarget.type}
                   chatTarget={chatTarget}
-                  chatRoomUsers={chatRoomUsers}
                   onlineUsers={onlineUsers}
                   messages={messages}
                   handleMessageSend={onMessageSend}

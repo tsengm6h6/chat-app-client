@@ -5,37 +5,62 @@ import ChatInput from '../Chat/ChatInput'
 import styled from 'styled-components'
 import chatContext from '../../chatContext'
 
-function ChatRoom({ chatType, chatTarget, chatRoomUsers, onlineUsers, messages, handleMessageSend, isTyping, handleTyping }) {
+function ChatRoom({ chatTarget, onlineUsers, messages, handleMessageSend, isTyping, handleTyping }) {
   console.log('chat room render')
   const [chatRoomUsersData, setChatRoomUsersData] = useState([])
-  const { userContacts } = useContext(chatContext)
+  const [chatUserHeaderInfo, setChatUserHeaderInfo] = useState({})
+
+  const { userContacts, currentUser } = useContext(chatContext)
 
   useEffect(() => {
-    if (chatType === 'room' && chatRoomUsers.length > 0) {
+    if (chatTarget) {
+      setChatUserHeaderInfo({
+        ...chatTarget,
+        name: chatTarget.type === 'room' ? chatTarget.roomname : chatTarget.username,
+        isOnline: chatTarget.type === 'room' 
+          ? chatTarget.users
+            .filter(userId => userId !== currentUser._id)
+            .some(userId => onlineUsers.indexOf(userId) > -1) // 聊天室有人上線就亮燈
+          : onlineUsers.indexOf(chatTarget._id) > -1 // 一對一上線才亮燈
+      })
+    }
+  }, [onlineUsers, chatTarget, currentUser])
+
+  useEffect(() => {
+    if (chatTarget.type === 'room' && chatTarget.users.length > 0) {
       setChatRoomUsersData(
-        () => chatRoomUsers.reduce((prev, curr) => {
-          const userContact = userContacts.find(contact => contact._id === curr.userId)
-          return [...prev, { ...curr, avatarImage: userContact?.avatarImage || null, isOnline: onlineUsers.indexOf(curr.userId) > -1 }]
-        }, [])
+        () => chatTarget.users
+        .filter(userId => userId !== currentUser._id)
+        .map(userId => {
+          const userContact = userContacts.find(contact => contact._id === userId)
+          return {
+            ...userContact,
+            avatarImage: userContact?.avatarImage  || null,
+            isOnline: onlineUsers.indexOf(userId) > -1
+          }
+        })
       )
     } else {
       setChatRoomUsersData([])
     }
-  }, [chatType, chatRoomUsers, userContacts, onlineUsers])
+  }, [chatTarget, userContacts, currentUser, onlineUsers])
 
   return (
     <ChatWrapper className=''>
-      <ChatHeader
-        chatType={chatType}
-        chatTarget={chatTarget}
-        chatRoomUsersData={chatRoomUsersData} />
-      <ChatMessages 
-        messages={messages}
-        chatRoomUsersData={chatRoomUsersData} />
-      <ChatInput 
-        handleMessageSend={handleMessageSend}
-        isTyping={isTyping}
-        handleTyping={handleTyping} />
+      { chatTarget && (
+        <>
+        <ChatHeader
+          chatUserHeaderInfo={chatUserHeaderInfo}
+          chatRoomUsersData={chatRoomUsersData} />
+        <ChatMessages 
+          messages={messages}
+          chatRoomUsersData={chatRoomUsersData} />
+        <ChatInput 
+          handleMessageSend={handleMessageSend}
+          isTyping={isTyping}
+          handleTyping={handleTyping} />
+        </>
+      )}
     </ChatWrapper>
   )
 }
