@@ -1,5 +1,6 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
+import { BiChevronDown, BiChevronUp } from "react-icons/bi"
 import ChatContactCard from '../Chat/ChatContactCard'
 import ChatContext from '../../chatContext'
 import { useEffect } from 'react'
@@ -9,6 +10,9 @@ function MainContacts({ chatTarget, onlineUsers, handleContactSelected }) {
   const { userContacts, userRooms, currentUser } = useContext(ChatContext)
   const [userContactsWithOnlineStatus, setUserContactsWithOnlineStatus] = useState([])
   const [userRoomsWithOnlineStatus, setUserRoomsWithOnlineStatus] = useState([])
+
+  const [showRooms, setShowRooms] = useState(true)
+  const [showContacts, setShowContacts] = useState(true)
 
   useEffect(() => {
     setUserContactsWithOnlineStatus(
@@ -35,32 +39,52 @@ function MainContacts({ chatTarget, onlineUsers, handleContactSelected }) {
       <h2 className='chat'>Chats</h2>
       <div className='chat-wrapper'>
         <div className='chat-category'>
-          <div className="type">Rooms</div>
-          <div className="contacts">
-            {
-              userRoomsWithOnlineStatus.map((room, index) => (
-                  <ChatContactCard
-                    key={`${index} - ${room.roomname}`}
-                    contact={room}
-                    handleContactSelected={handleContactSelected}
-                  />
-              ))
-            }
+          <div
+            className="type"
+            onClick={() => setShowRooms(prev => !prev)}>
+            Rooms ({userRoomsWithOnlineStatus.length})
+            <span className='chevron'>
+              { showRooms ? <BiChevronUp /> : <BiChevronDown />}
+            </span>
           </div>
+          {
+            showRooms &&
+              <div className="contacts">
+                {
+                  userRoomsWithOnlineStatus.map((room, index) => (
+                      <ChatContactCard
+                        key={`${index} - ${room.roomname}`}
+                        contact={room}
+                        handleContactSelected={handleContactSelected}
+                      />
+                  ))
+                }
+              </div>
+          }
         </div>
         <div className="chat-category">
-          <div className="type">Contacts</div>
-          <div className="contacts">
-          {
-            userContactsWithOnlineStatus.map((contact, index) => (
-                <ChatContactCard
-                  key={`${index} - ${contact.username}`}
-                  contact={contact}
-                  handleContactSelected={handleContactSelected}
-                />
-            ))
-          }
+          <div 
+            className="type"  
+            onClick={() => setShowContacts(prev => !prev)}>
+            Contacts ({userContactsWithOnlineStatus.length})
+            <span className='chevron'>
+              { showContacts ? <BiChevronUp /> : <BiChevronDown />}
+            </span>
           </div>
+          {
+            showContacts &&
+            <div className="contacts">
+              {
+                userContactsWithOnlineStatus.map((contact, index) => (
+                    <ChatContactCard
+                      key={`${index} - ${contact.username}`}
+                      contact={contact}
+                      handleContactSelected={handleContactSelected}
+                    />
+                ))
+              }
+              </div>
+          }
         </div>
       </div>
     </CardContainer>
@@ -123,6 +147,11 @@ const CardContainer = styled.div `
       .type {
         color: gray;
         margin-bottom: 8px;
+        cursor: pointer;
+      }
+
+      .chevron {
+        margin: 2px;
       }
 
       .contacts {
