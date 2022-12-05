@@ -1,7 +1,11 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import styled from 'styled-components'
+import chatContext from '../../chatContext'
 
-function ChatMessages({ messages, chatRoomUsersData }) {
+function ChatMessages({ messages }) {
+  const { userContacts } = useContext(chatContext)
+  const [messagesWithAvatar, setMessageWithAvatar] = useState([])
+
   const messageEl = useRef()
 
   const timeFormatter = (time) => {
@@ -10,23 +14,35 @@ function ChatMessages({ messages, chatRoomUsersData }) {
   }
 
   useEffect(() => {
+    setMessageWithAvatar(messages.map(msg => ({ 
+      ...msg,
+      avatar: userContacts.find(({ _id }) => msg.sender === _id)?.avatarImage || null
+    })))
+  }, [messages, userContacts])
+
+  useEffect(() => {
     messageEl.current?.scrollIntoView({ behavior: 'smooth' })
   },[messages])
 
   return (
     <MessagesWrapper>
       {
-        messages.map((msg, index) => (
+        messagesWithAvatar.map((msg, index) => (
           <div
             key={index}
             className={`message-wrapper ${msg.fromSelf ? 'sended' : 'received'}`}>
             <span>{timeFormatter(msg.time)}</span>
-            {` sender: ${msg.sender}`}
             <div
               ref={messageEl}
               className={`message ${msg.fromSelf ? 'sended' : 'received'}`}>
               <p>{msg.message}</p>
             </div>
+            { ! msg.fromSelf && 
+              <img 
+                src={`data:image/svg+xml;base64,${msg.avatar}`} 
+                alt="user-avatar"
+                className="avatar" />
+            }
           </div>
         ))
       }
@@ -62,6 +78,7 @@ const MessagesWrapper = styled.div `
 
     &.received {
       align-self: flex-start;
+      flex-direction: row-reverse;
     }
 
     span {
@@ -93,6 +110,12 @@ const MessagesWrapper = styled.div `
       background-color: #9900ff20;
       background-color: palevioletred;
     }
+  }
+
+  .avatar {
+    width: 2rem;
+    height: 2rem;
+    margin: 2px;
   }
 
 `

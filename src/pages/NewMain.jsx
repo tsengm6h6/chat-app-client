@@ -12,8 +12,7 @@ import { toastNormal } from '../utils/toastOptions'
 
 // TODO: 
 // 2. 新增 read / unread 狀態
-// 3. 調整新增聊天室 UI
-// 4. 手機版顯示切換 
+// 3. 調整新增聊天室 UI 
 
 function NewMain() {
   const navigate = useNavigate()

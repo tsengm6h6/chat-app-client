@@ -54,8 +54,7 @@ function ChatRoom({ chatTarget, handleContactSelected, onlineUsers, messages, ha
           chatUserHeaderInfo={chatUserHeaderInfo}
           chatRoomUsersData={chatRoomUsersData} />
         <ChatMessages 
-          messages={messages}
-          chatRoomUsersData={chatRoomUsersData} />
+          messages={messages} />
         <ChatInput 
           handleMessageSend={handleMessageSend}
           isTyping={isTyping}
