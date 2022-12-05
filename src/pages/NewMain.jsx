@@ -12,7 +12,7 @@ import ChatWelcome from '../components/ChatWelcome'
 import { toastNormal } from '../utils/toastOptions'
 
 // TODO: 
-// 1. 處理新增聊天室通知 -> socket 共用
+// 1. 新增 room 之後，typing 失效 -> 可能跟重拿 room list 有關係
 // 3. 新增 read / unread 狀態
 
 function NewMain() {
@@ -126,6 +126,7 @@ function NewMain() {
   }, [])
 
   useEffect(() => {
+    // TODO: 可能在這裡
     if (isTyping && chatTargetRef.current) {
       socket.emit('USER_TYPING', {
         type: chatTargetRef.current.type,
@@ -155,9 +156,15 @@ function NewMain() {
       socket.emit('USER_ONLINE', currentUser?._id)
       socket.off('ONLINE_USER_CHANGED').on('ONLINE_USER_CHANGED', handleActive)
       socket.off('RECEIVE_MESSAGE').on('RECEIVE_MESSAGE', handleReceiveMsg)
+      socket.off('INVITED_TO_ROOM').on('INVITED_TO_ROOM', handleGetInvited)
       socket.off('TYPING_NOTIFY').on('TYPING_NOTIFY', handleTypingNotify)
       socket.off('CHAT_ROOM_NOTIFY').on('CHAT_ROOM_NOTIFY', handleRoomNotify)
-      socket.off('INVITED_TO_ROOM').on('INVITED_TO_ROOM', handleGetInvited)
+    }
+    return () => {
+      if (socket) {
+        socket.off('TYPING_NOTIFY', handleTypingNotify)
+        socket.off('CHAT_ROOM_NOTIFY', handleRoomNotify)
+      }
     }
   }, [socket, currentUser, handleActive, handleReceiveMsg, handleTypingNotify, handleRoomNotify, handleGetInvited])
 
@@ -211,6 +218,7 @@ function NewMain() {
                 ? <ChatWelcome />
                 : <ChatRoom
                     chatTarget={chatTarget}
+                    chatTargetRef={chatTargetRef}
                     handleContactSelected={onContactSelect}
                     onlineUsers={onlineUsers}
                     messages={messages}
