@@ -1,11 +1,22 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
 import { BiSearchAlt, BiGroup, BiCog, BiLogOutCircle } from "react-icons/bi"
-import { Link } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import ChatContext from '../../chatContext'
+import SocketContext from '../../socketContext'
 
-function MainHeader({ handleLogout }) {
-  const { currentUser } = useContext(ChatContext)
+function MainHeader() {
+  const navigate = useNavigate()
+  const { currentUser, setCurrentUser } = useContext(ChatContext)
+  const { socket } = useContext(SocketContext)
+
+  const onLogout = () => {
+    socket.emit('USER_OFFLINE', currentUser._id) // 先更新才能切斷連線
+    socket.disconnect()
+    localStorage.removeItem(process.env.REACT_APP_LOCAL_KEY)
+    setCurrentUser(null)
+    navigate('/login')
+  }
   
   return (
     <Header>
@@ -26,7 +37,7 @@ function MainHeader({ handleLogout }) {
           <BiCog />
         </button>
         <button className="icon logout">
-          <BiLogOutCircle onClick={handleLogout}/>
+          <BiLogOutCircle onClick={onLogout}/>
       </button>
       </div>
     </Header>

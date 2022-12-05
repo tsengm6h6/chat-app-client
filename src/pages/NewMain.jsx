@@ -4,25 +4,28 @@ import MainHeader from '../components/Main/MainHeader'
 import MainContacts from '../components/Main/MainContacts'
 import { useNavigate } from 'react-router-dom'
 import ChatContext from '../chatContext'
+import SocketContext from '../socketContext'
 import { messageAPI } from '../api/messageApi'
 import ChatRoom from '../components/Chat/ChatRoom'
 import ChatWelcome from '../components/ChatWelcome'
-import { io } from 'socket.io-client'
+// import { io } from 'socket.io-client'
 import { toastNormal } from '../utils/toastOptions'
 
 // TODO: 
-// 2. 新增 read / unread 狀態
-// 3. 調整新增聊天室 UI 
+// 1. 處理新增聊天室通知 -> socket 共用
+// 3. 新增 read / unread 狀態
 
 function NewMain() {
   const navigate = useNavigate()
-  const { currentUser, setCurrentUser } = useContext(ChatContext)
+  const { currentUser, setCurrentUser, fetchRooms } = useContext(ChatContext)
+  const { socket } = useContext(SocketContext)
+
   const [chatTarget, setChatTarget] = useState(null)
   const [onlineUsers, setOnlineUsers] = useState([])
   const [messages, setMessages] = useState([])
   const [isTyping, setIsTyping] = useState(false)
 
-  const socket = useRef(null)
+  // const socket = useRef(null)
   const chatTargetRef = useRef(null)
 
   // 導航守衛
@@ -36,7 +39,7 @@ function NewMain() {
       }
     } else if (currentUser.avatarImage === '') {
       navigate('/setting')
-    } 
+    }
   }, [navigate, currentUser, setCurrentUser])
 
   // 監聽 chatTarget 改變 emit room 通知
@@ -45,7 +48,7 @@ function NewMain() {
     if ((chatTargetRef.current?._id !== chatTarget?._id)) {
       // 原本是群組 -> 通知離開
       if (chatTargetRef.current?.type === 'room') {
-        socket.current.emit('LEAVE_CHAT_ROOM', {
+        socket.emit('LEAVE_CHAT_ROOM', {
           roomId: chatTargetRef.current?._id,
           leaveUserId: currentUser._id,
           leaveUserName:  currentUser.username
@@ -54,7 +57,7 @@ function NewMain() {
 
       // 新加入是群組 -> 通知 JOIN
       if (chatTarget?.type === 'room') {
-        socket.current.emit('ENTER_CHAT_ROOM', {
+        socket.emit('ENTER_CHAT_ROOM', {
           roomId: chatTarget?._id,
           enterUserId: currentUser._id,
           enterUserName:  currentUser.username
@@ -63,7 +66,7 @@ function NewMain() {
     }
 
     chatTargetRef.current = chatTarget
-  }, [chatTarget, currentUser])
+  }, [socket, chatTarget, currentUser])
 
   // 取得 DB 裡的歷史訊息
   useEffect(() => {
@@ -124,25 +127,39 @@ function NewMain() {
 
   useEffect(() => {
     if (isTyping && chatTargetRef.current) {
-      socket.current.emit('USER_TYPING', {
+      socket.emit('USER_TYPING', {
         type: chatTargetRef.current.type,
         senderName: currentUser.username,
         senderId: currentUser._id,
         receiverId: chatTargetRef.current._id,
       })
     }
-  }, [isTyping, currentUser])
+  }, [socket, isTyping, currentUser])
+
+  // useEffect(() => {
+  //   if (socket && currentUser) {
+  //     socket.emit('USER_ONLINE', currentUser?._id)
+  //   }
+  // }, [socket, currentUser])
+
+  const handleGetInvited = useCallback(({ message }) => {
+    fetchRooms()
+    toastNormal(message)
+  }, [fetchRooms])
 
   useEffect(() => {
-    if (currentUser?._id) {
-      socket.current = io(`${process.env.REACT_APP_SERVER_URL}`)
-      socket.current.emit('USER_ONLINE', currentUser?._id)
-      socket.current.on('ONLINE_USER_CHANGED', handleActive)
-      socket.current.on('RECEIVE_MESSAGE', handleReceiveMsg)
-      socket.current.on('TYPING_NOTIFY', handleTypingNotify)
-      socket.current.on('CHAT_ROOM_NOTIFY', handleRoomNotify)
+    console.log('socket', socket)
+    if (socket) {
+      console.log('-- socket --', socket)
+      // socket = io(`${process.env.REACT_APP_SERVER_URL}`)
+      socket.emit('USER_ONLINE', currentUser?._id)
+      socket.off('ONLINE_USER_CHANGED').on('ONLINE_USER_CHANGED', handleActive)
+      socket.off('RECEIVE_MESSAGE').on('RECEIVE_MESSAGE', handleReceiveMsg)
+      socket.off('TYPING_NOTIFY').on('TYPING_NOTIFY', handleTypingNotify)
+      socket.off('CHAT_ROOM_NOTIFY').on('CHAT_ROOM_NOTIFY', handleRoomNotify)
+      socket.off('INVITED_TO_ROOM').on('INVITED_TO_ROOM', handleGetInvited)
     }
-  }, [currentUser, handleActive, handleReceiveMsg, handleTypingNotify, handleRoomNotify])
+  }, [socket, currentUser, handleActive, handleReceiveMsg, handleTypingNotify, handleRoomNotify, handleGetInvited])
 
   const onContactSelect = (newChatTarget) => {
     setChatTarget(newChatTarget)
@@ -170,7 +187,7 @@ function NewMain() {
     setMessages(formatMsg)
 
     // 用 socket 即時通知
-    socket.current.emit('SEND_MESSAGE', {
+    socket.emit('SEND_MESSAGE', {
       type: chatTargetRef.current?.type,
       message: newMessage,
       senderId: currentUser._id,
@@ -178,20 +195,12 @@ function NewMain() {
     })
   }
 
-  const onLogout = () => {
-    socket.current.emit('USER_OFFLINE', currentUser._id) // 先更新才能切斷連線
-    socket.current.disconnect()
-    localStorage.removeItem(process.env.REACT_APP_LOCAL_KEY)
-    setCurrentUser(null)
-    navigate('/login')
-  }
-
   return (
     <MainContainer>
       {
         currentUser &&
         <>
-          <MainHeader handleLogout={onLogout} />
+          <MainHeader />
           <div className={`chat-container ${chatTarget?._id ? 'target-selected' : ''}`}>
             <MainContacts
               chatTarget={chatTarget}

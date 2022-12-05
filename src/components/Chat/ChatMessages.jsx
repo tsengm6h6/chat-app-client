@@ -22,18 +22,18 @@ function ChatMessages({ messages }) {
 
   useEffect(() => {
     messageEl.current?.scrollIntoView({ behavior: 'smooth' })
-  },[messages])
+  },[messages, messagesWithAvatar])
 
   return (
     <MessagesWrapper>
       {
         messagesWithAvatar.map((msg, index) => (
           <div
+            ref={messageEl}
             key={index}
             className={`message-wrapper ${msg.fromSelf ? 'sended' : 'received'}`}>
             <span>{timeFormatter(msg.time)}</span>
             <div
-              ref={messageEl}
               className={`message ${msg.fromSelf ? 'sended' : 'received'}`}>
               <p>{msg.message}</p>
             </div>

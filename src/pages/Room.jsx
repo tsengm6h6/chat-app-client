@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useMemo } from 'react'
 import styled from 'styled-components'
 import RoomContacts from '../components/Room/RoomContacts'
 import RoomHeader from '../components/Room/RoomHeader'
@@ -9,23 +9,30 @@ import { Buffer } from 'buffer'
 import axios from "axios";
 import Loading from '../components/Loading'
 import ChatContext from '../chatContext'
+import SocketContext from '../socketContext'
 import { toastError } from '../utils/toastOptions'
 
 function Room() {
   const navigate = useNavigate()
   const { userContacts, userRooms, currentUser, fetchRooms } = useContext(ChatContext)
+  const { socket } = useContext(SocketContext)
 
   const [loading, setLoading] = useState(false)
-  const [selectedUser, setSelectedUser] = useState([])
+  const [userOptions, setUserOptions] = useState([])
   const [roomName, setRoomName] = useState('')
   const [roomAvatar, setRoomAvatar] = useState(null)
+
+  const selectedUser = useMemo(() => {
+    console.log('useMemo')
+    return userOptions.filter(user => user.selected)
+  }, [userOptions])
 
   useEffect(() => {
     console.log('room', currentUser, userContacts)
     if (currentUser && userContacts) {
       console.log('set room info')
       setRoomName(`${currentUser.username}'s room`)
-      setSelectedUser(userContacts.map(contact => ({ ...contact, selected: false })))
+      setUserOptions(userContacts.map(contact => ({ ...contact, selected: false })))
     }
   }, [currentUser, userContacts])
 
@@ -47,7 +54,7 @@ function Room() {
   }
 
   const onUserSelected = (userId) => {
-    setSelectedUser(prev => {
+    setUserOptions(prev => {
       return prev.map(user => user._id === userId ? {...user, selected: !user.selected } : user)
     })
   }
@@ -58,7 +65,7 @@ function Room() {
       return toastError('Room name has been used !')
     }
 
-    const roomUsers = [currentUser].concat(selectedUser.filter(user => user.selected))
+    const roomUsers = [currentUser].concat(selectedUser)
 
     try {
       const response = await roomAPI.postRoom({ 
@@ -67,6 +74,11 @@ function Room() {
         avatarImage: roomAvatar
       })
       if (response.status) {
+        socket.emit('ROOM_CREATED', {
+          roomname: roomName,
+          creator: currentUser.username,
+          invitedUser: selectedUser.map(user => user._id)
+        })
         await fetchRooms()
         navigate('/')
       }
@@ -93,7 +105,7 @@ function Room() {
               }
               <RoomContacts 
                 loading={loading}
-                contacts={selectedUser}
+                contacts={userOptions}
                 handleUserSelected={onUserSelected}
               />
               <div className={`button-wrapper ${loading ? 'loading-control' : ''}`}>
