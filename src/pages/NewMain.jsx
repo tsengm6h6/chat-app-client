@@ -81,7 +81,7 @@ function NewMain() {
         return data.messages.map(msg => ({
           message: msg.message,
           fromSelf: msg.sender === currentUser._id,
-          sender: msg.sender, // TODO: 顯示 sender 頭貼
+          sender: msg.sender,
           time: msg.updatedAt,
         }))
       }

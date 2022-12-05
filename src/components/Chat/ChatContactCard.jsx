@@ -35,6 +35,12 @@ const Card = styled.div `
   padding: 0.75rem;
   background-color: #131324;
   border-radius: 8px;
+  cursor: pointer;
+
+  &:hover {
+    position: relative;
+    bottom: 1px;
+  }
 
   &:not(:last-child) {
     margin-bottom: 8px;

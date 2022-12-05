@@ -2,9 +2,9 @@ import React from 'react'
 import styled from 'styled-components'
 import RoomContactCard from './RoomContactCard'
 
-function RoomContacts({ contacts, handleUserSelected, handleAddRoom }) {
+function RoomContacts({ loading, contacts, handleUserSelected, handleAddRoom }) {
   return (
-    <CardContainer>
+    <CardContainer className={`${loading ? 'loading-control' : ''}`}>
       <h2 className='chat'>Add Friends</h2>
       <div className='chat-wrapper'>
         <div className="contacts hidden">
@@ -30,10 +30,18 @@ const CardContainer = styled.div `
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
 
+  &.loading-control {
+    display: none;
+  }
+
   @media screen and (min-width: 768px) {
-    grid-row: 1 / 3;
+    grid-row: 1 / 4;
     grid-column: 1 / 2;
     border-top-right-radius: 0;
+
+    &.loading-control {
+      display: block;
+    }
   }
 
   .hidden {

@@ -16,12 +16,16 @@ const LoadingWrapper = styled.div `
   width: 100%;
   height: calc(100vh - 60px);
 
+  @media screen and (min-width: 768px) {
+    background: #00000076;
+  }
+
   img {
     max-width: 40%;
     object-fit: cover;
 
     @media screen and (min-width: 768px) {
-      max-width: 60%;
+      max-width: 30%;
     }
   }
 `

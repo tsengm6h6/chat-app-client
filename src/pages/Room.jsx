@@ -75,34 +75,31 @@ function Room() {
     }
   }
 
-  const onLogout = () => {}
-
   return (
     <RoomContainer>
       {
         currentUser &&
         <>
-          <MainHeader handleLogout={onLogout} />
-          {
-            loading 
-            ? <Loading /> 
-            : (
-                <div className="room-inner">
-                  <RoomHeader 
+          <MainHeader />
+            <div className="room-inner">
+              {
+                loading
+                ? <Loading />
+                : <RoomHeader
                     roomAvatar={roomAvatar}
                     roomName={roomName}
                     handleRoomNameChange={onRoomNameChange}
                   />
-                  <RoomContacts 
-                    contacts={selectedUser}
-                    handleUserSelected={onUserSelected}
-                  />
-                  <div className="button-wrapper">
-                    <button onClick={onAddRoom}>Add Room</button>
-                  </div>
-                </div>
-              )
-          }
+              }
+              <RoomContacts 
+                loading={loading}
+                contacts={selectedUser}
+                handleUserSelected={onUserSelected}
+              />
+              <div className={`button-wrapper ${loading ? 'loading-control' : ''}`}>
+                <button className='add-button' onClick={onAddRoom}>Add Room</button>
+              </div>
+            </div>
         </>
       }
     </RoomContainer>
@@ -119,7 +116,7 @@ const RoomContainer = styled.div `
     grid-template-rows: 165px 1fr 90px;
 
     @media screen and (min-width: 768px) {
-      grid-template-rows: 1fr 90px;
+      grid-template-rows: 1fr 90px 90px;
       grid-template-columns: 300px 1fr;
     }
   }
@@ -127,17 +124,27 @@ const RoomContainer = styled.div `
   .button-wrapper {
     background: #00000076;
     grid-row: 3 / 4;
+    padding: 1.5rem;
     display: flex;
     justify-content: center;
-    padding: 1.5rem;
+
+    &.loading-control {
+      display: none;
+    }
 
     @media screen and (min-width: 768px) {
+      background: none;
       grid-row: 2 / 3;
       grid-column: 2 / 3;
+      z-index: 2;
+
+      &.loading-control {
+        display: flex;
+      }
     }
   }
 
-  button {
+  .add-button {
     padding: 0.75rem 2rem;
     border: none;
     border-radius: 20px 80px / 120px;
