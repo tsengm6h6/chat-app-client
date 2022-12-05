@@ -43,9 +43,12 @@ function MainContacts({ chatTarget, onlineUsers, handleContactSelected }) {
             className="type"
             onClick={() => setShowRooms(prev => !prev)}>
             Rooms ({userRoomsWithOnlineStatus.length})
-            <span className='chevron'>
-              { showRooms ? <BiChevronUp /> : <BiChevronDown />}
-            </span>
+            {
+              userRoomsWithOnlineStatus.length > 0 &&
+              <span className='chevron'>
+                { showRooms ? <BiChevronUp /> : <BiChevronDown />}
+              </span>
+            }
           </div>
           {
             showRooms &&
@@ -67,9 +70,12 @@ function MainContacts({ chatTarget, onlineUsers, handleContactSelected }) {
             className="type"  
             onClick={() => setShowContacts(prev => !prev)}>
             Contacts ({userContactsWithOnlineStatus.length})
-            <span className='chevron'>
-              { showContacts ? <BiChevronUp /> : <BiChevronDown />}
-            </span>
+            {
+              userContactsWithOnlineStatus.length > 0 &&
+              <span className='chevron'>
+                { showContacts ? <BiChevronUp /> : <BiChevronDown />}
+              </span>
+            }
           </div>
           {
             showContacts &&
