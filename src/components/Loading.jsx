@@ -14,11 +14,15 @@ const LoadingWrapper = styled.div `
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 60px);
 
   img {
-    max-width: 60%;
+    max-width: 40%;
     object-fit: cover;
+
+    @media screen and (min-width: 768px) {
+      max-width: 60%;
+    }
   }
 `
 

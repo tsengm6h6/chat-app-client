@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react'
 import styled from 'styled-components'
 import RoomContacts from '../components/Room/RoomContacts'
 import RoomHeader from '../components/Room/RoomHeader'
+import MainHeader from '../components/Main/MainHeader'
 import { useNavigate } from 'react-router-dom'
 import { roomAPI } from '../api/roomApi'
 import { Buffer } from 'buffer'
@@ -74,23 +75,35 @@ function Room() {
     }
   }
 
+  const onLogout = () => {}
+
   return (
     <RoomContainer>
       {
-        loading ? <Loading /> : (
-          <>
-            <RoomHeader 
-              roomAvatar={roomAvatar}
-              roomName={roomName}
-              handleRoomNameChange={onRoomNameChange}
-            />
-            <RoomContacts 
-              contacts={selectedUser}
-              handleUserSelected={onUserSelected}
-              handleAddRoom={onAddRoom}
-            />
-          </>
-        )
+        currentUser &&
+        <>
+          <MainHeader handleLogout={onLogout} />
+          {
+            loading 
+            ? <Loading /> 
+            : (
+                <div className="room-inner">
+                  <RoomHeader 
+                    roomAvatar={roomAvatar}
+                    roomName={roomName}
+                    handleRoomNameChange={onRoomNameChange}
+                  />
+                  <RoomContacts 
+                    contacts={selectedUser}
+                    handleUserSelected={onUserSelected}
+                  />
+                  <div className="button-wrapper">
+                    <button onClick={onAddRoom}>Add Room</button>
+                  </div>
+                </div>
+              )
+          }
+        </>
       }
     </RoomContainer>
   )
@@ -99,6 +112,48 @@ function Room() {
 const RoomContainer = styled.div `
   width: 100%;
   height: 100%;
+
+  .room-inner {
+    height: calc(100vh - 60px);
+    display: grid;
+    grid-template-rows: 165px 1fr 90px;
+
+    @media screen and (min-width: 768px) {
+      grid-template-rows: 1fr 90px;
+      grid-template-columns: 300px 1fr;
+    }
+  }
+
+  .button-wrapper {
+    background: #00000076;
+    grid-row: 3 / 4;
+    display: flex;
+    justify-content: center;
+    padding: 1.5rem;
+
+    @media screen and (min-width: 768px) {
+      grid-row: 2 / 3;
+      grid-column: 2 / 3;
+    }
+  }
+
+  button {
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 20px 80px / 120px;
+    background-color: #997af0;
+    color: white;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    transition: all 0.2s ease-out;
+
+    &:hover {
+      background-color: #4e0eff;
+      border-radius: 20px 20px / 120px;
+    }
+  }
 `
 
 export default Room

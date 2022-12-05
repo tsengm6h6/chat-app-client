@@ -7,7 +7,7 @@ function RoomContacts({ contacts, handleUserSelected, handleAddRoom }) {
     <CardContainer>
       <h2 className='chat'>Add Friends</h2>
       <div className='chat-wrapper'>
-        <div className="contacts">
+        <div className="contacts hidden">
         {
           contacts.map((contact, index) => (
             <RoomContactCard
@@ -18,29 +18,36 @@ function RoomContacts({ contacts, handleUserSelected, handleAddRoom }) {
         }
         </div>
       </div>
-      <button onClick={handleAddRoom}>Add Room</button>
     </CardContainer>
   )
 }
 
 const CardContainer = styled.div `
+  grid-row: 2 / 3;
+  overflow: hidden;
   background: #00000076;
-  width: 100%;
-  height: calc(100% - 160px);
+  padding: 1.5rem 1rem 0.5rem;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
-  padding: 1.5rem 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 1rem;
+
+  @media screen and (min-width: 768px) {
+    grid-row: 1 / 3;
+    grid-column: 1 / 2;
+    border-top-right-radius: 0;
+  }
+
+  .hidden {
+    /* display: none; */
+  }
+
+  .chat {
+    margin: 1rem 0;
+  }
 
   .chat-wrapper {
-    flex: 1;
-    padding-right: 8px;
-    height: 60vh;
+    height: calc(100% - 40px);
     overflow-y: auto;
-    border-radius: 8px;
+    padding: 0 16px 0 12px;
 
     &::-webkit-scrollbar {
       background-color: #080420;
@@ -49,25 +56,6 @@ const CardContainer = styled.div `
         background-color: #ffffff34;
         border-radius: 8px;
       }
-    }
-  }
-
-  button {
-    padding: 0.75rem 2rem;
-    margin: 8px auto 0;
-    border: none;
-    border-radius: 20px 80px / 120px;
-    background-color: #997af0;
-    color: white;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 700;
-    transition: all 0.5s ease-out;
-
-    &:hover {
-      background-color: #4e0eff;
-      border-radius: 20px 20px / 120px;
     }
   }
 `

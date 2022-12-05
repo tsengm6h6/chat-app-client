@@ -23,8 +23,19 @@ function RoomHeader({ roomAvatar, roomName, handleRoomNameChange }) {
 }
 
 const Header = styled.header `
+  grid-row: 1 / 2;
   padding: 1.5rem 1rem;
   position: relative;
+
+  @media screen and (min-width: 768px) {
+    grid-column: 2 / 3;
+    background: #00000076;
+    padding: 1.5rem 1rem 0.5rem;
+    border-top-right-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
   .icon {
     position: absolute;
@@ -35,6 +46,7 @@ const Header = styled.header `
   }
 
   .room-info {
+    margin: 1rem 0;
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -46,6 +58,11 @@ const Header = styled.header `
       height: 4rem;
       background-color: papayawhip;
       border-radius: 50%;
+
+      @media screen and (min-width: 768px) {
+        width: 10rem;
+        height: 10rem;
+      }
     }
 
     input {
@@ -57,6 +74,10 @@ const Header = styled.header `
       border-radius: 8px;
       outline: none;
       color: white;
+
+      @media screen and (min-width: 768px) {
+        margin-top: 1rem;
+      }
     }
   }
 `
