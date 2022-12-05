@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react'
 import { userAPI } from './api/userApi'
+import { roomAPI } from './api/roomApi'
 
 const ChatContext = createContext()
 
@@ -23,12 +24,19 @@ export const ChatProvider = ({ children }) => {
     
   }, [currentUser])
 
+  const fetchRooms = async() => {
+    const { data: { data } } = await roomAPI.getUserRooms({ userId: currentUser._id })
+    setUserRooms(data.length > 0 ? data.map(room => ({ ...room, type: 'room'})) : [])
+  }
+
+
   return (
     <ChatContext.Provider value={{ 
       currentUser, 
       setCurrentUser,
       userContacts,
       setUserContacts,
+      fetchRooms,
       userRooms,
       setUserRooms,
       chatTarget,

@@ -2,8 +2,20 @@ import React from 'react'
 import styled from 'styled-components'
 
 function RoomContactCard({ contact, handleUserSelected }) {
+  
+  const onCardClick = (e) => {
+    console.log('on card click')
+    handleUserSelected(contact._id)
+  }
+  
+  const onInputChanged = (e) => {
+    console.log('input changed')
+    handleUserSelected(contact._id)
+  }
+
+
   return (
-    <Card>
+    <Card onClickCapture={onCardClick}>
       <img src={`data:image/svg+xml;base64,${contact.avatarImage}`} alt='user-avatar'/>
       <div className='user-wrapper'>
         <h2 className='user-name'>{contact.username}</h2>
@@ -11,8 +23,8 @@ function RoomContactCard({ contact, handleUserSelected }) {
       <div className="radio-button">
         <input 
           type="checkbox" 
-          checked={contact.checked}  
-          onChange={() => handleUserSelected(contact._id)}
+          checked={contact.selected}  
+          onChange={onInputChanged}
           name="userName" />
       </div>
     </Card>
@@ -29,6 +41,12 @@ const Card = styled.div `
   padding: 0.75rem;
   background-color: #131324;
   border-radius: 8px;
+  cursor: pointer;
+
+  &:hover {
+    position: relative;
+    bottom: 1px;
+  }
 
   &:not(:last-child) {
     margin-bottom: 8px;

@@ -1,56 +1,44 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import styled from 'styled-components'
 import RoomContacts from '../components/Room/RoomContacts'
 import RoomHeader from '../components/Room/RoomHeader'
 import { useNavigate } from 'react-router-dom'
-import { userAPI } from '../api/userApi'
 import { roomAPI } from '../api/roomApi'
 import { Buffer } from 'buffer'
 import axios from "axios";
 import Loading from '../components/Loading'
+import ChatContext from '../chatContext'
+import { toastError } from '../utils/toastOptions'
 
 function Room() {
   const navigate = useNavigate()
+  const { userContacts, userRooms, currentUser, fetchRooms } = useContext(ChatContext)
+
   const [loading, setLoading] = useState(false)
-  const [currentUser, setCurrentUser] = useState(null)
-  const [contactUsers, setContactUsers] = useState([])
+  const [selectedUser, setSelectedUser] = useState([])
   const [roomName, setRoomName] = useState('')
   const [roomAvatar, setRoomAvatar] = useState(null)
 
   useEffect(() => {
-    if (currentUser) {
-      const fetchUsers = async() => {
-        const { data } = await userAPI.getUsers()
-        const users = data.data.filter(({ _id}) => _id !== currentUser._id)
-        setContactUsers(users.map(user => ({...user, checked: false })))
-      }
-      fetchUsers()
-        setRoomName(`${currentUser.username}'s room`)
+    console.log('room', currentUser, userContacts)
+    if (currentUser && userContacts) {
+      console.log('set room info')
+      setRoomName(`${currentUser.username}'s room`)
+      setSelectedUser(userContacts.map(contact => ({ ...contact, selected: false })))
     }
-  }, [currentUser])
+  }, [currentUser, userContacts])
 
   useEffect(() => {
-    setLoading(true)
-    const getLocalStorageUser = async () => {
-      const user = await JSON.parse(localStorage.getItem(process.env.REACT_APP_LOCAL_KEY))
-      if (!user) {
-        navigate('/login')
-      } else if (user.avatarImage === '') {
-        navigate('/setting')
-      } else {
-        await getAvatarsData()
-        setCurrentUser(user)
-        setLoading(false)
-      }
-    }
     const genRandomNum = () => Math.floor(Math.random() * 1000)
     const getAvatarsData = async () => {
+      setLoading(true)
       const api = `https://api.multiavatar.com/${genRandomNum()}?apikey=${process.env.REACT_APP_AVATAR_KEY}`
       const { data } = await axios.get(api)
       const buffer = new Buffer(data)
       setRoomAvatar(buffer.toString('base64'))
+      setLoading(false)
     }
-    getLocalStorageUser()
+    getAvatarsData()
   }, [navigate])
 
   const onRoomNameChange = (name) => {
@@ -58,22 +46,32 @@ function Room() {
   }
 
   const onUserSelected = (userId) => {
-    setContactUsers(prev => {
-      return prev.map(user => user._id === userId ? {...user, checked: !user.checked } : user)
+    setSelectedUser(prev => {
+      return prev.map(user => user._id === userId ? {...user, selected: !user.selected } : user)
     })
   }
 
   const onAddRoom = async() => {
-    // TODO: fetch API
-    const invitedUsers = [currentUser].concat(contactUsers.filter(user => user.checked))
-    console.log('room name', roomName)
-    console.log('room users', invitedUsers)
-    const response = await roomAPI.postRoom({ 
-      roomname: roomName,
-      users: invitedUsers.map(user => user._id),
-      avatarImage: roomAvatar
-    })
-    console.log(response)
+    const roomNameExisted = userRooms.some(({ roomname }) => roomname === roomName)
+    if (roomNameExisted) {
+      return toastError('Room name has been used !')
+    }
+
+    const roomUsers = [currentUser].concat(selectedUser.filter(user => user.selected))
+
+    try {
+      const response = await roomAPI.postRoom({ 
+        roomname: roomName,
+        users: roomUsers.map(user => user._id),
+        avatarImage: roomAvatar
+      })
+      if (response.status) {
+        await fetchRooms()
+        navigate('/')
+      }
+    } catch(e) {
+      toastError(e.message)
+    }
   }
 
   return (
@@ -87,7 +85,7 @@ function Room() {
               handleRoomNameChange={onRoomNameChange}
             />
             <RoomContacts 
-              contacts={contactUsers}
+              contacts={selectedUser}
               handleUserSelected={onUserSelected}
               handleAddRoom={onAddRoom}
             />
