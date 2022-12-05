@@ -46,7 +46,7 @@ function ChatRoom({ chatTarget, handleContactSelected, onlineUsers, messages, ha
   }, [chatTarget, userContacts, currentUser, onlineUsers])
 
   return (
-    <ChatWrapper className={`chat-control ${chatTarget?._id && 'target-selected'}`}>
+    <ChatWrapper className={`${chatTarget?._id && 'target-selected'}`}>
       { chatTarget && (
         <>
         <ChatHeader
@@ -72,20 +72,14 @@ const ChatWrapper = styled.div `
   flex-direction: column;
   justify-content: space-between;
   gap: 0.5rem;
+  display: none;
 
-  &.chat-control {
-    display: none;
-
-    &.target-selected {
-      display: flex;
-    }
-
-    @media screen and (min-width: 768px){
-      display: flex;
-    }
+  &.target-selected {
+    display: flex;
   }
 
   @media screen and (min-width: 768px){
+    display: flex;
     padding: 0 1rem;
   }
 `

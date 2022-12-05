@@ -35,7 +35,7 @@ function MainContacts({ chatTarget, onlineUsers, handleContactSelected }) {
   }, [onlineUsers, userRooms, currentUser])
 
   return (
-    <CardContainer className={`chat-control ${chatTarget?._id && 'target-selected'}`}>
+    <CardContainer className={`${chatTarget?._id && 'target-selected'}`}>
       <h2 className='chat'>Chats</h2>
       <div className='chat-wrapper'>
         <div className='chat-category'>
@@ -95,24 +95,19 @@ const CardContainer = styled.div `
   width: 100%;
   min-height: 0;
   flex: 1;
+  display: block;
 
-  &.chat-control {
-    display: block;
-
-    &.target-selected {
-      display: none;
-    }
-
-    @media screen and (min-width: 768px){
-      &.target-selected {
-        display: block;
-      }
-    }
+  &.target-selected {
+    display: none;
   }
 
   @media screen and (min-width: 768px){
     width: 300px;
     flex: 0 0 auto;
+
+    &.target-selected {
+      display: block;
+    }
   }
 
   .chat {

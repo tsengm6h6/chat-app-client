@@ -192,7 +192,7 @@ function NewMain() {
         currentUser &&
         <>
           <MainHeader handleLogout={onLogout} />
-          <div className="chat-container">
+          <div className={`chat-container ${chatTarget?._id ? 'target-selected' : ''}`}>
             <MainContacts
               chatTarget={chatTarget}
               onlineUsers={onlineUsers}
