@@ -1,21 +1,23 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import styled from 'styled-components'
 import { BiSend, BiSmile } from "react-icons/bi";
 import EmojiPicker from 'emoji-picker-react';
+import { userTyping } from '../../socket/emit'
+import ChatContext from '../../chatContext';
+import { WsContext } from '../../wsContext'
 
-function ChatInput({ handleMessageSend, handleTyping, isTyping }) {
+function ChatInput({ handleMessageSend }) {
+  const { currentUser, chatTarget } = useContext(ChatContext)
+  const { value : { typingNotify } } = useContext(WsContext)
+
   const [showEmoji, setShowEmoji] = useState(false)
   const [currentMessage, setCurrentMessage] = useState('')
-
-  const typingRef = useRef()
+  const [isTyping, setIsTyping] = useState(false)
+  const [showTyping, setShowTyping] = useState(false)
 
   useEffect(() => {
     setCurrentMessage('')
   }, [])
-
-  useEffect(() => {
-    typingRef.current = currentMessage === ''
-  }, [currentMessage])
 
   const handleEmojiClick = (emoji, evt) => {
     setCurrentMessage((prev) => prev += emoji.emoji)
@@ -24,23 +26,50 @@ function ChatInput({ handleMessageSend, handleTyping, isTyping }) {
 
   const onFormSubmit = (evt) => {
     handleMessageSend(evt, currentMessage)
-    handleTyping(false)
+    setIsTyping(false)
     setCurrentMessage('')
   }
 
-  const handleInputChange = useCallback((evt) => {
+  const onInputChange = (evt) => {
     setCurrentMessage(evt.target.value)
-    if (isTyping !== typingRef.current) {
-      handleTyping(typingRef.current)
+    if (evt.target.value === '') setIsTyping(false)
+  }
+
+  const onKeyDown = () => {
+    currentMessage === '' ? setIsTyping(false) : setIsTyping(true)
+  }
+
+  useEffect(() => {
+    userTyping({
+      type: chatTarget.type,
+      message: isTyping ? `${currentUser.username} is typing...` : '',
+      senderId: currentUser._id,
+      receiverId: chatTarget._id,
+    })
+  }, [isTyping, chatTarget, currentUser])
+
+  useEffect(() => {
+    const { type = null, message = null, senderId  = null } = typingNotify
+    const isChatting = type === 'room' || (type === 'user' && senderId === chatTarget._id)
+    if (message && isChatting) {
+      setShowTyping(true)
+    } else {
+      setShowTyping(false)
     }
-  }, [isTyping, handleTyping])
+  }, [typingNotify, chatTarget])
 
   return (
     <InputContainer>
+        {
+          showTyping && (
+            <p className='typing'>{typingNotify.message}</p>
+          )
+        }
         <form onSubmit={onFormSubmit}>
           <input 
             className='input-field' type="text"
-            onChange={handleInputChange}
+            onChange={onInputChange}
+            onKeyDown={onKeyDown}
             value={currentMessage}
           />
           <div className="button emoji-button">
@@ -59,6 +88,12 @@ function ChatInput({ handleMessageSend, handleTyping, isTyping }) {
 }
 
 const InputContainer = styled.div `
+
+    .typing {
+      padding-left: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
 
     .button {
       font-size: 1.25rem;

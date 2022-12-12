@@ -1,13 +1,30 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import styled from 'styled-components'
+import ChatContext from '../../chatContext'
+import { enterRoom, leaveRoom } from '../../socket/emit'
 
-function ChatContactCard({ contact, handleContactSelected }) {
+function ChatContactCard({ contact }) {
+  const { currentUser, chatTarget, setChatTarget } = useContext(ChatContext)
+
   const timeFormatter = (time) => {
     const [hour, min] = time.split('T')[1].split(':')
     return hour + ':' + min
   }
+
+  const onContactClick = (contact) => {
+    // enter room
+    if (contact.type === 'room' && contact._id !== chatTarget?._id) {
+      enterRoom({ roomId: contact._id, message: `${currentUser.username} 已加入聊天` })
+    }
+    // leave room
+    if (chatTarget?.type === 'room' && contact._id !== chatTarget?._id) {
+      leaveRoom({ roomId: chatTarget._id, message:  `${currentUser.username} 已離開聊天`})
+    }
+    setChatTarget(contact)
+  }
+
   return (
-    <Card onClick={() => handleContactSelected(contact)}>
+    <Card onClick={() => onContactClick(contact)}>
       <div className={`avatar-wrapper ${contact.isOnline ? 'online' : 'offline'}`}>
         <img src={`data:image/svg+xml;base64,${contact.avatarImage}`} alt='user-avatar'/>
       </div>

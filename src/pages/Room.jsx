@@ -9,13 +9,12 @@ import { Buffer } from 'buffer'
 import axios from "axios";
 import Loading from '../components/Loading'
 import ChatContext from '../chatContext'
-import SocketContext from '../socketContext'
 import { toastError } from '../utils/toastOptions'
+import { roomCreated } from '../socket/emit'
 
 function Room() {
   const navigate = useNavigate()
   const { userContacts, userRooms, currentUser, fetchRooms } = useContext(ChatContext)
-  const { socket } = useContext(SocketContext)
 
   const [loading, setLoading] = useState(false)
   const [userOptions, setUserOptions] = useState([])
@@ -74,7 +73,7 @@ function Room() {
         avatarImage: roomAvatar
       })
       if (response.status) {
-        socket.emit('ROOM_CREATED', {
+        roomCreated({
           roomname: roomName,
           creator: currentUser.username,
           invitedUser: selectedUser.map(user => user._id)

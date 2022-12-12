@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useRef, useContext } from 'react'
 import styled from 'styled-components'
-import chatContext from '../../chatContext'
+import ChatContext from '../../chatContext'
 
 function ChatMessages({ messages }) {
-  const { userContacts } = useContext(chatContext)
+  const { userContacts } = useContext(ChatContext)
   const [messagesWithAvatar, setMessageWithAvatar] = useState([])
-
   const messageEl = useRef()
 
   const timeFormatter = (time) => {
@@ -117,7 +116,6 @@ const MessagesWrapper = styled.div `
     height: 2rem;
     margin: 2px;
   }
-
 `
 
 export default ChatMessages

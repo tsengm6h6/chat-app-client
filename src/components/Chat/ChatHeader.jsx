@@ -1,16 +1,64 @@
-import React from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import styled from 'styled-components'
 import { BiLeftArrowCircle } from "react-icons/bi"
+import ChatContext from '../../chatContext'
+import { WsContext } from '../../wsContext'
+import { leaveRoom } from '../../socket/emit'
 
-function ChatHeader({ handleContactSelected, chatUserHeaderInfo, chatRoomUsersData }) {
+function ChatHeader() {
+  const [chatUserHeaderInfo, setChatUserHeaderInfo] = useState({})
+  const [chatRoomUsersData, setChatRoomUsersData] = useState([])
+  
+  const { userContacts, currentUser, chatTarget, setChatTarget } = useContext(ChatContext)
+  const { value : { onlineUsers } }= useContext(WsContext)
+
+  // online display
+  useEffect(() => {
+    if (chatTarget) {
+      setChatUserHeaderInfo({
+        ...chatTarget,
+        name: chatTarget.type === 'room' ? chatTarget.roomname : chatTarget.username,
+        isOnline: chatTarget.type === 'room' 
+          ? chatTarget.users
+            .filter(userId => userId !== currentUser._id)
+            .some(userId => onlineUsers.indexOf(userId) > -1) // 聊天室有人上線就亮燈
+          : onlineUsers.indexOf(chatTarget._id) > -1 // 一對一上線才亮燈
+      })
+    }
+  }, [onlineUsers, chatTarget, currentUser])
+
+  // chatRoom member online display
+  useEffect(() => {
+    if (chatTarget.type === 'room' && chatTarget.users.length > 0) {
+      setChatRoomUsersData(
+        () => chatTarget.users
+        .filter(userId => userId !== currentUser._id)
+        .map(userId => {
+          const userContact = userContacts.find(contact => contact._id === userId)
+          return {
+            ...userContact,
+            avatarImage: userContact?.avatarImage  || '',
+            isOnline: onlineUsers.indexOf(userId) > -1
+          }
+        })
+      )
+    } else {
+      setChatRoomUsersData([])
+    }
+  }, [chatTarget, userContacts, currentUser, onlineUsers])
+
   
   const onClickBack = () => {
-    handleContactSelected(null)
+    // leave room
+    if (chatTarget?.type === 'room' ) {
+      leaveRoom({ roomId: chatTarget._id, message:  `${currentUser.username} 已離開聊天`})
+    }
+    setChatTarget(null)
   }
 
   return (
     <Header>
-      <div onClick={onClickBack} className="icon">
+      <div onClick={() => onClickBack()} className="icon">
         <BiLeftArrowCircle/>
       </div>
       <div className='room-members'>

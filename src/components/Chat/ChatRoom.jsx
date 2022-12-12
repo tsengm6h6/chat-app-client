@@ -3,64 +3,105 @@ import ChatHeader from '../Chat/ChatHeader'
 import ChatMessages from '../Chat/ChatMessages'
 import ChatInput from '../Chat/ChatInput'
 import styled from 'styled-components'
-import chatContext from '../../chatContext'
+import ChatContext from '../../chatContext'
+import { toastNormal } from '../../utils/toastOptions'
+import { messageAPI } from '../../api/messageApi'
 
-function ChatRoom({ chatTarget, handleContactSelected, onlineUsers, messages, handleMessageSend, isTyping, handleTyping }) {
+import { WsContext } from '../../wsContext'
+import { sendMessage } from '../../socket/emit'
+
+function ChatRoom() {
   console.log('chat room render')
-  const [chatRoomUsersData, setChatRoomUsersData] = useState([])
-  const [chatUserHeaderInfo, setChatUserHeaderInfo] = useState({})
 
-  const { userContacts, currentUser } = useContext(chatContext)
+  const [messages, setMessages] = useState([])
 
+  const { currentUser, chatTarget, setChatTarget } = useContext(ChatContext)
+  const { value : { messageFromSocket, roomNotify } , setValue } = useContext(WsContext)
+
+  // get history message
   useEffect(() => {
-    if (chatTarget) {
-      setChatUserHeaderInfo({
-        ...chatTarget,
-        name: chatTarget.type === 'room' ? chatTarget.roomname : chatTarget.username,
-        isOnline: chatTarget.type === 'room' 
-          ? chatTarget.users
-            .filter(userId => userId !== currentUser._id)
-            .some(userId => onlineUsers.indexOf(userId) > -1) // 聊天室有人上線就亮燈
-          : onlineUsers.indexOf(chatTarget._id) > -1 // 一對一上線才亮燈
-      })
-    }
-  }, [onlineUsers, chatTarget, currentUser])
-
-  useEffect(() => {
-    if (chatTarget.type === 'room' && chatTarget.users.length > 0) {
-      setChatRoomUsersData(
-        () => chatTarget.users
-        .filter(userId => userId !== currentUser._id)
-        .map(userId => {
-          const userContact = userContacts.find(contact => contact._id === userId)
-          return {
-            ...userContact,
-            avatarImage: userContact?.avatarImage  || '',
-            isOnline: onlineUsers.indexOf(userId) > -1
-          }
+    if (currentUser && chatTarget) {
+      const fetchMsg = async() => {
+        const { data } = await messageAPI.getMessages({
+          type: chatTarget.type,
+          from: currentUser._id,
+          to: chatTarget._id,
         })
-      )
-    } else {
-      setChatRoomUsersData([])
+        setMessages(formatMsg(data))
+      }
+      const formatMsg = (data) => {
+        return data.messages.map(msg => ({
+          message: msg.message,
+          fromSelf: msg.sender === currentUser._id,
+          sender: msg.sender,
+          time: msg.updatedAt,
+        }))
+      }
+      fetchMsg()
     }
-  }, [chatTarget, userContacts, currentUser, onlineUsers])
+  }, [currentUser, chatTarget, setChatTarget])
+
+  // message send & receive
+  useEffect(() => {
+    const { type, message, senderId, time } = messageFromSocket
+    if (type === 'room' || (type === 'user' && senderId === chatTarget._id)) {
+        setMessages(prev => [...prev, {
+        message,
+        fromSelf: false,
+        sender: senderId,
+        time
+      }])
+    }
+  }, [messageFromSocket, chatTarget])
+
+  const onMessageSend = async (evt, newMessage) => {
+    evt.preventDefault()
+    const { data } = await messageAPI.postMessage({
+        type: chatTarget.type,
+        from: currentUser._id,
+        to: chatTarget._id
+      }, {
+        message: newMessage,
+      }
+    )
+    
+    const formatMsg = data.messages.map(msg => ({
+      message: msg.message,
+      fromSelf: msg.sender === currentUser._id,
+      sender: msg.sender,
+      time: msg.updatedAt
+    }))
+
+    setMessages(formatMsg)
+
+    // 用 socket 即時通知對方
+    sendMessage({
+      type: chatTarget.type,
+      message: newMessage,
+      senderId: currentUser._id,
+      receiverId: chatTarget._id,
+      time: new Date().toISOString()
+    })
+  }
+
+  // roomNotify
+  useEffect(() => {
+    if (roomNotify !== '' && chatTarget.type === 'room') {
+      toastNormal(roomNotify)
+      setValue(prevState => ({
+        ...prevState,
+        roomNotify: ''
+      }))
+    }
+  }, [roomNotify, chatTarget, setValue])
 
   return (
     <ChatWrapper className={`${chatTarget?._id && 'target-selected'}`}>
-      { chatTarget && (
-        <>
-        <ChatHeader
-          handleContactSelected={handleContactSelected}
-          chatUserHeaderInfo={chatUserHeaderInfo}
-          chatRoomUsersData={chatRoomUsersData} />
+        <ChatHeader />
         <ChatMessages 
           messages={messages} />
         <ChatInput 
-          handleMessageSend={handleMessageSend}
-          isTyping={isTyping}
-          handleTyping={handleTyping} />
-        </>
-      )}
+          handleMessageSend={onMessageSend} />
     </ChatWrapper>
   )
 }

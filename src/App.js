@@ -10,13 +10,13 @@ import { ToastContainer } from 'react-toastify';
 import styled from 'styled-components';
 import Room from './pages/Room';
 import { ChatProvider } from './chatContext'
-import { SocketProvider } from './socketContext'
+import { WsContextProvider } from './wsContext.js'
 
 function App() {
   return (
     <Conatiner>
       <ChatProvider>
-        <SocketProvider>
+        <WsContextProvider>
         <Router>
           <Routes>
             <Route path="/chat" element={<Chat />}></Route>
@@ -28,7 +28,7 @@ function App() {
             <Route path="/room" element={<Room />}></Route>
           </Routes>
         </Router>
-        </SocketProvider>
+        </WsContextProvider>
         </ChatProvider>
       <ToastContainer />
     </Conatiner>

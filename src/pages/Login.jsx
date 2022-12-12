@@ -5,6 +5,7 @@ import { toastError } from '../utils/toastOptions'
 import { authAPI } from '../api/authApi'
 import BrandLogo from '../components/BrandLogo'
 import ChatContext from '../chatContext'
+import { userOnline } from '../socket/emit'
 
 function Login() {
   const navigate = useNavigate()
@@ -19,6 +20,7 @@ function Login() {
     const existedUser = localStorage.getItem(process.env.REACT_APP_LOCAL_KEY)
     if (existedUser) {
       setCurrentUser(existedUser)
+      userOnline(existedUser._id)
       navigate('/')
     }
   }, [navigate, setCurrentUser])
@@ -31,6 +33,7 @@ function Login() {
       if (data.status) {
         localStorage.setItem(process.env.REACT_APP_LOCAL_KEY, JSON.stringify(data.user))
         setCurrentUser(data.user)
+        userOnline(data.user._id)
         navigate('/')
       } else {
         toastError(data.msg);

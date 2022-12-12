@@ -3,16 +3,16 @@ import styled from 'styled-components'
 import { BiSearchAlt, BiGroup, BiCog, BiLogOutCircle } from "react-icons/bi"
 import { useNavigate, Link } from 'react-router-dom'
 import ChatContext from '../../chatContext'
-import SocketContext from '../../socketContext'
+import { userOffline } from '../../socket/emit'
 
 function MainHeader() {
   const navigate = useNavigate()
-  const { currentUser, setCurrentUser } = useContext(ChatContext)
-  const { socket } = useContext(SocketContext)
+  const { currentUser, setCurrentUser, setChatTarget } = useContext(ChatContext)
 
   const onLogout = () => {
-    socket.emit('USER_OFFLINE', currentUser._id) // 先更新才能切斷連線
-    socket.disconnect()
+    userOffline(currentUser._id)
+    // socket.emit('USER_OFFLINE', currentUser._id) // 先更新才能切斷連線
+    // socket.disconnect()
     localStorage.removeItem(process.env.REACT_APP_LOCAL_KEY)
     setCurrentUser(null)
     navigate('/login')
@@ -30,7 +30,7 @@ function MainHeader() {
         <button className="icon">
           <BiSearchAlt />
         </button>
-        <Link to="/room" className="icon">
+        <Link to="/room" onClick={() => setChatTarget(null)} className="icon">
           <BiGroup />
         </Link>
         <button className="icon">

@@ -5,9 +5,12 @@ import ChatContactCard from '../Chat/ChatContactCard'
 import ChatContext from '../../chatContext'
 import { useEffect } from 'react'
 import { useState } from 'react'
+import { WsContext } from '../../wsContext'
 
-function MainContacts({ chatTarget, onlineUsers, handleContactSelected }) {
-  const { userContacts, userRooms, currentUser } = useContext(ChatContext)
+function MainContacts() {
+  const { userContacts, userRooms, currentUser, chatTarget } = useContext(ChatContext)
+  const { value: { onlineUsers } } = useContext(WsContext)
+
   const [userContactsWithOnlineStatus, setUserContactsWithOnlineStatus] = useState([])
   const [userRoomsWithOnlineStatus, setUserRoomsWithOnlineStatus] = useState([])
 
@@ -58,7 +61,6 @@ function MainContacts({ chatTarget, onlineUsers, handleContactSelected }) {
                       <ChatContactCard
                         key={`${index} - ${room.roomname}`}
                         contact={room}
-                        handleContactSelected={handleContactSelected}
                       />
                   ))
                 }
@@ -85,7 +87,6 @@ function MainContacts({ chatTarget, onlineUsers, handleContactSelected }) {
                     <ChatContactCard
                       key={`${index} - ${contact.username}`}
                       contact={contact}
-                      handleContactSelected={handleContactSelected}
                     />
                 ))
               }
