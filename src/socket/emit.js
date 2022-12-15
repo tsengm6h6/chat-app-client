@@ -8,11 +8,18 @@ export const userOnline = (userId) => {
 export const userOffline = (userId) => {
   console.log('user offline')
   socket.emit('USER_OFFLINE', userId)
+}
+
+export const userDisconnect = () => {
   socket.disconnect()
 }
 
 export const sendMessage = ({ type, message, senderId, receiverId, time }) => {
   socket.emit('SEND_MESSAGE', { type, message, senderId, receiverId, time })
+}
+
+export const updateMessageStatus = ({ type, readerId, messageSender }) => {
+  socket.emit('UPDATE_MESSAGE_STATUS', { type, readerId, messageSender })
 }
 
 export const userTyping = ({ type, message, senderId, receiverId }) => {

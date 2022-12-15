@@ -5,9 +5,9 @@ import RoomContactCard from './RoomContactCard'
 function RoomContacts({ loading, contacts, handleUserSelected, handleAddRoom }) {
   return (
     <CardContainer className={`${loading ? 'loading-control' : ''}`}>
-      <h2 className='chat'>Add Friends</h2>
-      <div className='chat-wrapper'>
-        <div className="contacts hidden">
+      <h2 className='title'>Add Friends</h2>
+      <div className='contact-wrapper'>
+        <div className="contacts">
         {
           contacts.map((contact, index) => (
             <RoomContactCard
@@ -25,7 +25,6 @@ function RoomContacts({ loading, contacts, handleUserSelected, handleAddRoom }) 
 const CardContainer = styled.div `
   grid-row: 2 / 3;
   overflow: hidden;
-  background: #00000076;
   padding: 1.5rem 1rem 0.5rem;
   border-top-left-radius: 20px;
   border-top-right-radius: 20px;
@@ -44,15 +43,11 @@ const CardContainer = styled.div `
     }
   }
 
-  .hidden {
-    /* display: none; */
-  }
-
-  .chat {
+  .title {
     margin: 1rem 0;
   }
 
-  .chat-wrapper {
+  .contact-wrapper {
     height: calc(100% - 40px);
     overflow-y: auto;
     padding: 0 16px 0 12px;

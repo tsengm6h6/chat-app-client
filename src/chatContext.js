@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react'
+import React, { createContext, useState, useEffect, useCallback } from 'react'
 import { userAPI } from './api/userApi'
 import { roomAPI } from './api/roomApi'
 
@@ -6,23 +6,22 @@ const ChatContext = createContext()
 
 export const ChatProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null)
+  const [chatTarget, setChatTarget] = useState(null)
+  
   const [userContacts, setUserContacts] = useState([])
   const [userRooms, setUserRooms] = useState([])
-  const [chatTarget, setChatTarget] = useState(null)
+
+  const fetchContacts = useCallback(async() => {
+    if (!currentUser?._id) return
+    const { data } = await userAPI.getUserContacts({ userId: currentUser._id })
+    const { rooms, users } = data.data
+    setUserContacts(users.length > 0 ? users : [])
+    setUserRooms(rooms.length > 0 ? rooms : [])
+  }, [currentUser])
 
   useEffect(() => {
-    const fetchContacts = async() => {
-      const { data } = await userAPI.getUserContacts({ userId: currentUser._id })
-      const { rooms, users } = data.data
-      setUserContacts(users.length > 0 ? users.map(user => ({ ...user, type: 'user'})) : [])
-      setUserRooms(rooms.length > 0 ? rooms.map(room => ({ ...room, type: 'room'})) : [])
-    }
-    
-    if (currentUser?._id) {
-      fetchContacts()
-    }
-    
-  }, [currentUser])
+    fetchContacts()
+  }, [fetchContacts])
 
   const fetchRooms = async() => {
     const { data: { data } } = await roomAPI.getUserRooms({ userId: currentUser._id })
@@ -40,7 +39,8 @@ export const ChatProvider = ({ children }) => {
       userRooms,
       setUserRooms,
       chatTarget,
-      setChatTarget
+      setChatTarget,
+      fetchContacts
     }}>
       {children}
     </ChatContext.Provider>

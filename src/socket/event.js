@@ -15,6 +15,21 @@ export const socketEvent = ({ setValue }) => {
     ))
   })
 
+  socket.off('MESSAGE_READ').on('MESSAGE_READ', ({ type, readerId, messageSender }) => {
+    console.log('*** socket get message read event ***')
+    setValue(prevState => (
+      {
+        ...prevState,
+        messageStatusToUpdate: {
+          type,
+          readerId,
+          messageSender
+        }
+      }
+    ))
+
+  })
+
   socket.on('TYPING_NOTIFY', ({ type, message, senderId, receiverId }) => {
     setValue(prevState => (
       { ...prevState, 

@@ -8,6 +8,7 @@ function ChatMessages({ messages }) {
   const messageEl = useRef()
 
   const timeFormatter = (time) => {
+    if (!time) return
     const [hour, min] = time.split('T')[1].split(':')
     return hour + ':' + min
   }
@@ -31,6 +32,10 @@ function ChatMessages({ messages }) {
             ref={messageEl}
             key={index}
             className={`message-wrapper ${msg.fromSelf ? 'sended' : 'received'}`}>
+            { 
+              !msg.unread && msg.fromSelf &&
+              <span>已讀</span>
+            }
             <span>{timeFormatter(msg.time)}</span>
             <div
               className={`message ${msg.fromSelf ? 'sended' : 'received'}`}>

@@ -53,8 +53,8 @@ const Card = styled.div `
   }
 
   img {
-    height: 4rem;
-    width: 4rem;
+    height: 3.5rem;
+    width: 3.5rem;
   }
 
   .user-wrapper {

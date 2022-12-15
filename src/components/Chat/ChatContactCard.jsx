@@ -3,15 +3,16 @@ import styled from 'styled-components'
 import ChatContext from '../../chatContext'
 import { enterRoom, leaveRoom } from '../../socket/emit'
 
-function ChatContactCard({ contact }) {
+function ChatContactCard({ contact, updateContactUnreadCount }) {
   const { currentUser, chatTarget, setChatTarget } = useContext(ChatContext)
 
   const timeFormatter = (time) => {
+    if (!time) return
     const [hour, min] = time.split('T')[1].split(':')
     return hour + ':' + min
   }
 
-  const onContactClick = (contact) => {
+  const onContactClick = async (contact) => {
     // enter room
     if (contact.type === 'room' && contact._id !== chatTarget?._id) {
       enterRoom({ roomId: contact._id, message: `${currentUser.username} 已加入聊天` })
@@ -20,23 +21,31 @@ function ChatContactCard({ contact }) {
     if (chatTarget?.type === 'room' && contact._id !== chatTarget?._id) {
       leaveRoom({ roomId: chatTarget._id, message:  `${currentUser.username} 已離開聊天`})
     }
+
+    updateContactUnreadCount(contact._id, 0, contact.type)
     setChatTarget(contact)
   }
 
   return (
     <Card onClick={() => onContactClick(contact)}>
       <div className={`avatar-wrapper ${contact.isOnline ? 'online' : 'offline'}`}>
-        <img src={`data:image/svg+xml;base64,${contact.avatarImage}`} alt='user-avatar'/>
+        {
+          contact.avatarImage
+          ? <img src={`data:image/svg+xml;base64,${contact.avatarImage}`} alt='user-avatar'/>
+          : <img src="/user.png" alt="default-avatar" />
+        }
       </div>
       <div className='user-wrapper'>
         <h2 className='user-name'>{contact.username || contact.roomname}</h2>
-        <p className='user-message truncate'>{contact.message?.message || ''}</p>
+        <p className='user-message truncate'>{contact.latestMessage || ''}</p>
       </div>
       <div className="unread-wrapper">
-        <div className='notify'>
-          <span>4</span>
-        </div>
-        <span className='time'>{contact.message ? timeFormatter(contact.message.updatedAt) : ''}</span>
+        { contact?.unreadCount !== 0 &&
+          <div className='notify'>
+            <span>{contact.unreadCount}</span>
+          </div>
+        }
+        <span className='time'>{contact.latestMessageUpdatedAt ? timeFormatter(contact.latestMessageUpdatedAt) : ''}</span>
       </div>
     </Card>
   )

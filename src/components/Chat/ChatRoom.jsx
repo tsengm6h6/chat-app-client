@@ -1,22 +1,34 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useEffect, useContext } from 'react'
 import ChatHeader from '../Chat/ChatHeader'
 import ChatMessages from '../Chat/ChatMessages'
 import ChatInput from '../Chat/ChatInput'
 import styled from 'styled-components'
 import ChatContext from '../../chatContext'
-import { toastNormal } from '../../utils/toastOptions'
+import { toastError, toastNormal } from '../../utils/toastOptions'
 import { messageAPI } from '../../api/messageApi'
 
 import { WsContext } from '../../wsContext'
-import { sendMessage } from '../../socket/emit'
+import { sendMessage, updateMessageStatus } from '../../socket/emit'
 
-function ChatRoom() {
+function ChatRoom({ messages, setMessages, updateContactLatestMessage }) {
   console.log('chat room render')
 
-  const [messages, setMessages] = useState([])
-
-  const { currentUser, chatTarget, setChatTarget } = useContext(ChatContext)
-  const { value : { messageFromSocket, roomNotify } , setValue } = useContext(WsContext)
+  const { currentUser, chatTarget, fetchContacts } = useContext(ChatContext)
+  const { value : { roomNotify } , setValue } = useContext(WsContext)
+  
+  // 更新已讀、contact 未讀數
+  useEffect(() => {
+    console.log('chat room', chatTarget)
+    if (chatTarget?._id) {
+      messageAPI.updateReadStatus({ receiverId: currentUser._id })
+      console.log('=== 更新已讀、socket 傳送已讀通知 ===')
+      updateMessageStatus({ 
+        type: chatTarget.type,
+        readerId: currentUser._id,
+        messageSender: chatTarget._id
+      })
+    }
+  }, [currentUser, chatTarget, fetchContacts])
 
   // get history message
   useEffect(() => {
@@ -35,27 +47,18 @@ function ChatRoom() {
           fromSelf: msg.sender === currentUser._id,
           sender: msg.sender,
           time: msg.updatedAt,
+          unread: msg.unread
         }))
       }
       fetchMsg()
     }
-  }, [currentUser, chatTarget, setChatTarget])
-
-  // message send & receive
-  useEffect(() => {
-    const { type, message, senderId, time } = messageFromSocket
-    if (type === 'room' || (type === 'user' && senderId === chatTarget._id)) {
-        setMessages(prev => [...prev, {
-        message,
-        fromSelf: false,
-        sender: senderId,
-        time
-      }])
-    }
-  }, [messageFromSocket, chatTarget])
+  }, [currentUser, chatTarget, setMessages])
 
   const onMessageSend = async (evt, newMessage) => {
     evt.preventDefault()
+    if (!newMessage) {
+      return toastError('message is required !')
+    }
     const { data } = await messageAPI.postMessage({
         type: chatTarget.type,
         from: currentUser._id,
@@ -69,7 +72,8 @@ function ChatRoom() {
       message: msg.message,
       fromSelf: msg.sender === currentUser._id,
       sender: msg.sender,
-      time: msg.updatedAt
+      time: msg.updatedAt,
+      unread: msg.unread
     }))
 
     setMessages(formatMsg)
@@ -80,6 +84,13 @@ function ChatRoom() {
       message: newMessage,
       senderId: currentUser._id,
       receiverId: chatTarget._id,
+      time: new Date().toISOString()
+    })
+
+    updateContactLatestMessage({
+      type: chatTarget.type,
+      contactId: chatTarget._id, 
+      message: newMessage, 
       time: new Date().toISOString()
     })
   }

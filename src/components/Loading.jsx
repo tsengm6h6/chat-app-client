@@ -17,7 +17,7 @@ const LoadingWrapper = styled.div `
   height: calc(100vh - 60px);
 
   @media screen and (min-width: 768px) {
-    background: #00000076;
+    /* background: #00000076; */
   }
 
   img {

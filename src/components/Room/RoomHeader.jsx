@@ -30,7 +30,6 @@ const Header = styled.header `
   @media screen and (min-width: 768px) {
     grid-row: 1 / 4;
     grid-column: 2 / 3;
-    background: #00000076;
     padding: 1.5rem 1rem 0.5rem;
     border-top-right-radius: 20px;
     display: flex;

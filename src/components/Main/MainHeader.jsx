@@ -10,11 +10,11 @@ function MainHeader() {
   const { currentUser, setCurrentUser, setChatTarget } = useContext(ChatContext)
 
   const onLogout = () => {
-    userOffline(currentUser._id)
-    // socket.emit('USER_OFFLINE', currentUser._id) // 先更新才能切斷連線
-    // socket.disconnect()
+    userOffline(currentUser._id) // 先更新才能切斷連線
+    // userDisconnect()
     localStorage.removeItem(process.env.REACT_APP_LOCAL_KEY)
     setCurrentUser(null)
+    setChatTarget(null)
     navigate('/login')
   }
   

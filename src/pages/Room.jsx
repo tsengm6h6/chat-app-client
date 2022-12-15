@@ -122,18 +122,20 @@ const RoomContainer = styled.div `
   height: 100%;
 
   .room-inner {
+    background: #00000076;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
     height: calc(100vh - 60px);
     display: grid;
     grid-template-rows: 165px 1fr 90px;
 
     @media screen and (min-width: 768px) {
       grid-template-rows: 1fr 90px 90px;
-      grid-template-columns: 300px 1fr;
+      grid-template-columns: 316px 1fr;
     }
   }
 
   .button-wrapper {
-    background: #00000076;
     grid-row: 3 / 4;
     padding: 1.5rem;
     display: flex;

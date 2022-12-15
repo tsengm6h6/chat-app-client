@@ -7,7 +7,7 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import { WsContext } from '../../wsContext'
 
-function MainContacts() {
+function MainContacts({ updateContactUnreadCount }) {
   const { userContacts, userRooms, currentUser, chatTarget } = useContext(ChatContext)
   const { value: { onlineUsers } } = useContext(WsContext)
 
@@ -61,6 +61,7 @@ function MainContacts() {
                       <ChatContactCard
                         key={`${index} - ${room.roomname}`}
                         contact={room}
+                        updateContactUnreadCount={ updateContactUnreadCount }
                       />
                   ))
                 }
@@ -87,6 +88,7 @@ function MainContacts() {
                     <ChatContactCard
                       key={`${index} - ${contact.username}`}
                       contact={contact}
+                      updateContactUnreadCount={updateContactUnreadCount}
                     />
                 ))
               }
